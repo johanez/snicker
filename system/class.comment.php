@@ -1,9 +1,9 @@
 <?php
 /*
  |  Snicker     A small Comment System 4 Bludit
- |  @file       ./system/comments.class.php
+ |  @file       ./system/class.comment.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -17,15 +17,28 @@
          |  @since  0.1.0
          |
          |  @param  multi   The unique comment id or FALSE.
+         |  @param  multi   The unique page comment ID.
          */
-        public function __construct($uid){
-            global $comments;
-
-            // Get Item
+        public function __construct($uid, $uuid){
             $this->vars["uid"] = $uid;
             if($uid === false){
-                $row = $comments->getDefaultFields();
+                $row = array(
+                    "type"          => "comment",
+                    "depth"         => 1,
+                    "title"         => "",
+                    "comment"       => "",
+                    "rating"        => [0, 0],
+                    "page_uuid"     => "",
+                    "parent_uid"    => "",
+                    "author"        => "",
+                    "subscribe"     => false,
+                    "date"          => "",
+                    "dateModified"  => "",
+                    "dateAudit"     => "",
+                    "custom"        => array()
+                );
             } else {
+                $comments = new Comments($uuid);
                 if(Text::isEmpty($uid) || !$comments->exists($uid)){
                     // @todo Throw Error
                 }
@@ -88,19 +101,7 @@
          |  @return string  The (sanitized) raw content on success, FALSE on failure.
          */
         public function commentRaw($sanitize = false){
-            if(isset($this->commentRaw)){
-                return ($sanitize)? Sanitize::html($this->commentRaw): $this->commentRaw;
-            }
-
-            // Validate Comment File
-            $file = $this->file();
-            if(!file_exists($file)){
-                return false;
-            }
-
-            // Read File
-            $this->commentRaw = file_get_contents($file);
-            return $this->commentRaw($sanitize);
+            return $this->getValue("comment");
         }
 
         /*
@@ -112,36 +113,7 @@
          |  @return string  The (sanitized) content on success, FALSE on failure.
          */
         public function comment($sanitize = false){
-            global $snicker;
-
-            // Shortcut
-            if(isset($this->comment)){
-                return ($sanitize)? Sanitize::html($this->comment): $this->comment;
-            }
-
-            // Prepare Comment
-            if(($comment = $this->commentRaw()) === false){
-                return false;
-            }
-
-            // Parse HTML
-            $allowed  = "<a><b><strong><i><em><u><del><ins><s><strike><p><br><br/><br />";
-            $allowed .= "<mark><abbr><acronym><dfn><ul><ol><li><dl><dt><dd><hr><hr/><hr />";
-            if($snicker->getValue("comment_markup_html") == 1){
-                $comment = strip_tags($comment, $allowed);
-            } else {
-                $comment = strip_tags($comment);
-            }
-
-            // Parse Markdown
-            if($snicker->getValue("comment_markup_markdown") == 1){
-        		$parsedown = new Parsedown();
-        		$comment = $parsedown->text($comment);
-            }
-
-            // Return Content
-            $this->comment = $comment;
-            return $this->comment($sanitize);
+            return $this->getValue("comment");
         }
 
         /*
@@ -275,6 +247,14 @@
         }
 
         /*
+         |  FIELD :: GET PAGE UUID
+         |  @since  0.1.0
+         */
+        public function page_uuid(){
+            return $this->getValue("page_uuid");
+        }
+
+        /*
          |  FIELD :: GET PARENT UID
          |  @since  0.1.0
          */
@@ -353,16 +333,25 @@
          |  @since  0.1.0
          */
         public function username(){
-            global $L, $users;
+            global $L, $users, $SnickerUsers;
 
-            if($this->getValue("uuid") === "bludit"){
-                if($users->exists($this->getValue("username")) !== false){
-                    $user = new User($this->getValue("username"));
+            list($type, $id) = array_pad(explode("::", $this->getValue("author", 2)), 2, null);
+            switch($type){
+                case "bludit":
+                    if(!$users->exists($id)){
+                        break;
+                    }
+                    $user = new User($id);
                     return $user->nickname();
-                }
-                return false;
+                case "guest":
+                    if(!$SnickerUsers->exists($id)){
+                        break;
+                    }
+                    return $SnickerUsers->db[$id]["username"];
+                case "unknown":
+                    return $L->g("Unknown User");
             }
-            return $this->getValue("username");
+            return false;
         }
 
         /*
@@ -370,16 +359,25 @@
          |  @since  0.1.0
          */
         public function email(){
-            global $L, $users;
+            global $L, $users, $SnickerUsers;
 
-            if($this->getValue("uuid") === "bludit"){
-                if($users->exists($this->getValue("username")) !== false){
-                    $user = new User($this->getValue("username"));
+            list($type, $id) = array_pad(explode("::", $this->getValue("author", 2)), 2, null);
+            switch($type){
+                case "bludit":
+                    if(!$users->exists($id)){
+                        break;
+                    }
+                    $user = new User($id);
                     return $user->email();
-                }
-                return false;
+                case "guest":
+                    if(!$SnickerUsers->exists($id)){
+                        break;
+                    }
+                    return $SnickerUsers->db[$id]["email"];
+                case "unknown":
+                    return "unknown@" . $_SERVER["SERVER_NAME"];
             }
-            return $this->getValue("email");
+            return false;
         }
 
         /*

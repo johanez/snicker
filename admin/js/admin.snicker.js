@@ -31,21 +31,53 @@
         "use strict";
 
         /*
-         |  PRE-SELECT MENU
+         |  MAIN MENU LINK HANDLER
          |  @since  0.1.0
          */
-        each(document.querySelectorAll("[data-handle='tabs']"), function(){
-            var hash = window.location.hash,
-                tabs = this.querySelectorAll("li > a");
-
-            if(tabs.length > 0){
-                for(var l = tabs.length, i = 0; i < l; i++){
-                    if(tabs[i].getAttribute("href") == hash || (hash.length <= 1 && i == 0)){
-                        tabs[i].click();
-                        break;
+        var mainMenu = d.querySelector("[data-handle='tabs']");
+        if(mainMenu){
+            var menuLink = function(link){
+                if(typeof(link) === "undefined"){
+                    if(w.location.hash.length == 0){
+                        var link = mainMenu.querySelector("li a");
+                    } else {
+                        var link = mainMenu.querySelector("[href='#snicker-" + w.location.hash.substr(1) + "']");
                     }
                 }
+                if(!(link instanceof Element)){
+                    return false;
+                }
+
+                // Handle
+                if(link && !link.classList.contains("active")){
+                    link.click();
+                }
+                if(link){
+                    w.location.hash = link.getAttribute("href").replace("snicker-", "");
+                }
+            };
+
+            // Current Hash Handler
+            if(w.location.hash.length > 0){
+                menuLink();
             }
-        });
+
+            // Local Hash Handler
+            each(mainMenu.querySelectorAll("li > a"), function(){
+                this.addEventListener("click", function(event){
+                    menuLink(this);
+                });
+            });
+
+            // History Hash Handler
+            w.onhashchange = function(event){
+                if(w.location.hash.length == 0){
+                    var link = mainMenu.querySelector("li a");
+                } else {
+                    var link = mainMenu.querySelector("[href='#snicker-" + w.location.hash.substr(1) + "']");
+                }
+                menuLink(link);
+            };
+        }
     });
 })(window);

@@ -1,9 +1,9 @@
 <?php
 /*
  |  Snicker     A small Comment System 4 Bludit
- |  @file       ./system/snicker-template.class.php
+ |  @file       ./system/abstract.comments-theme.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -11,7 +11,7 @@
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
-    abstract class SnickerTemplate{
+    abstract class CommentsTheme{
         /*
          |  REQUIRED :: FORM
          |  @note   This method renders the comment form used on the frontend.

@@ -3,7 +3,7 @@
  |  Snicker     A small Comment System 4 Bludit
  |  @file       ./system/themes/default/snicker.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -11,7 +11,7 @@
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
-    class Default_SnickerTemplate extends SnickerTemplate{
+    class Default_SnickerTemplate extends CommentsTheme{
         const SNICKER_NAME = "Default Theme";
 
         const SNICKER_JS = "snicker.js";
@@ -22,8 +22,7 @@
          |  @since  0.1.0
          */
         public function form($username = "", $email = "", $title = "", $message = ""){
-            global $comments, $page, $security, $snicker;
-
+            global $comments, $page, $security;
 
             if(empty($security->getTokenCSRF())){
                 $security->generateTokenCSRF();
@@ -31,7 +30,7 @@
 
             $reply = isset($_GET["snicker"]) && $_GET["snicker"] == "reply";
             if($reply && isset($_GET["uid"]) && $comments->exists($_GET["uid"])){
-                $reply = new Comment($_GET["uid"]);
+                $reply = new Comment($_GET["uid"], $page->uuid());
             }
             ?>
                 <form class="comment-form" method="post" action="<?php echo $page->permalink(); ?>?snicker=comment#snicker">
@@ -89,39 +88,58 @@
 
                     <footer>
                         <div class="aside aside-left">
-                            <input type="checkbox" id="comment-subscribe" name="comment[subscribe]" value="1" />
-                            <label for="comment-subscribe">Subscribe via eMail</label>
+                            <?php if(sn_config("subscription")){ ?>
+                                <input type="checkbox" id="comment-subscribe" name="comment[subscribe]" value="1" />
+                                <label for="comment-subscribe">Subscribe via eMail</label>
+                            <?php } else { ?>
+                                <?php if(sn_config("frontend_terms") === "default"){ ?>
+                                    <div class="aside aside-full terms-of-use">
+                                        <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
+                                        <label for="comment-terms">
+                                            <?php sn_e("I agree that my data (incl. my anonymized IP address) gets stored!"); ?>
+                                        </label>
+                                    </div>
+                                <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
+                                    <div class="aside aside-full terms-of-use">
+                                        <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
+                                        <label for="comment-terms">I agree the <a href="" target="_blank">Terms of Use</a>!</label>
+                                    </div>
+                                <?php } ?>
+                            <?php } ?>
                         </div>
                         <div class="aside aside-right">
                             <input type="hidden" name="tokenCSRF" value="<?php echo $security->getTokenCSRF(); ?>" />
-                            <input type="hidden" name="comment[page_key]" value="<?php echo $page->key(); ?>" />
+                            <input type="hidden" name="comment[page_uuid]" value="<?php echo $page->uuid(); ?>" />
                             <input type="hidden" name="action" value="snicker" />
-                            <input type="hidden" name="snicker" value="form" />
                             <?php if(is_a($reply, "Comment")){ ?>
                                 <input type="hidden" name="comment[parent_uid]" value="<?php echo $reply->uid(); ?>" />
-                                <button name="type" value="reply" data-string="Comment">Answer</button>
+                                <button name="snicker" value="reply" data-string="Comment">Answer</button>
                             <?php } else { ?>
-                                <button name="type" value="comment" data-string="Answer">Comment</button>
+                                <button name="snicker" value="comment" data-string="Answer">Comment</button>
                             <?php } ?>
                         </div>
 
-                        <?php if($snicker->getValue("frontend_terms") === "default"){ ?>
-                            <div class="aside aside-full terms-of-use">
-                                <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                <label for="comment-terms">I agree that the given data (incl. my hashed, anonymized IP address) gets stored!</label>
-                            </div>
-                        <?php } else if($snicker->getValue("frontend_terms") !== "disabled"){ ?>
-                            <div class="aside aside-full terms-of-use">
-                                <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                <label for="comment-terms">I agree the <a href="" target="_blank">Terms of Use</a>!</label>
-                            </div>
+                        <?php if(sn_config("subscription")){ ?>
+                            <?php if(sn_config("frontend_terms") === "default"){ ?>
+                                <div class="aside aside-full terms-of-use">
+                                    <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
+                                    <label for="comment-terms">
+                                        <?php sn_e("I agree that my data (incl. my anonymized IP address) gets stored!"); ?>
+                                    </label>
+                                </div>
+                            <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
+                                <div class="aside aside-full terms-of-use">
+                                    <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
+                                    <label for="comment-terms">I agree the <a href="" target="_blank">Terms of Use</a>!</label>
+                                </div>
+                            <?php } ?>
                         <?php } ?>
                     </footer>
                 </form>
             <?php
 
-            unset($_SESSION["s_snicker-alert"]);
-            unset($_SESSION["s_snicker-success"]);
+            unset($_SESSION["s_snicker-alert"]);        // Remove Snicker Alerts
+            unset($_SESSION["s_snicker-success"]);      // Remove Snicker Success
         }
 
         /*
@@ -160,46 +178,46 @@
             if($location === "bottom"){
                 ?>
                     <div class="pagination pagination-bottom">
-                    <div class="pagination-inner">
-                        <?php if($prev === false){ ?>
-                            <span class="pagination-button button-first disabled">&laquo;</span>
-                            <span class="pagination-button button-previous disabled">&lsaquo;</span>
-                        <?php } else { ?>
-                            <a href="<?php printf($link, 1); ?>" class="pagination-button button-first">&laquo;</a>
-                            <a href="<?php printf($link, $prev); ?>" class="pagination-button button-previous">&lsaquo;</a>
-                        <?php } ?>
+                        <div class="pagination-inner">
+                            <?php if($prev === false){ ?>
+                                <span class="pagination-button button-first disabled">&laquo;</span>
+                                <span class="pagination-button button-previous disabled">&lsaquo;</span>
+                            <?php } else { ?>
+                                <a href="<?php printf($link, 1); ?>" class="pagination-button button-first">&laquo;</a>
+                                <a href="<?php printf($link, $prev); ?>" class="pagination-button button-previous">&lsaquo;</a>
+                            <?php } ?>
 
-                        <?php
-                            if($maxpages < 6){
-                                $start = 1;
-                                $stop = $maxpages;
-                            } else {
-                                $start = ($cpage > 3)? $cpage - 3: $cpage;
-                                $stop = ($cpage + 3 < $maxpages)? $cpage + 3: $maxpages;
-                            }
+                            <?php
+                                if($maxpages < 6){
+                                    $start = 1;
+                                    $stop = $maxpages;
+                                } else {
+                                    $start = ($cpage > 3)? $cpage - 3: $cpage;
+                                    $stop = ($cpage + 3 < $maxpages)? $cpage + 3: $maxpages;
+                                }
 
-                            if($start > 1){
-                                ?><span class="pagination-button button-sep disabled">...</span><?php
-                            }
-                            for($i = $start; $i <= $stop; $i++){
-                                $active = ($i == $cpage)? "active": "";
-                                ?>
-                                    <a href="<?php printf($link, $i); ?>" class="pagination-button button-number <?php echo $active; ?>"><?php echo $i; ?></a>
-                                <?php
-                            }
-                            if($stop < $maxpages){
-                                ?><span class="pagination-button button-sep disabled">...</span><?php
-                            }
-                        ?>
+                                if($start > 1){
+                                    ?><span class="pagination-button button-sep disabled">...</span><?php
+                                }
+                                for($i = $start; $i <= $stop; $i++){
+                                    $active = ($i == $cpage)? "active": "";
+                                    ?>
+                                        <a href="<?php printf($link, $i); ?>" class="pagination-button button-number <?php echo $active; ?>"><?php echo $i; ?></a>
+                                    <?php
+                                }
+                                if($stop < $maxpages){
+                                    ?><span class="pagination-button button-sep disabled">...</span><?php
+                                }
+                            ?>
 
-                        <?php if($next !== false){ ?>
-                            <a href="<?php printf($link, $next); ?>" class="pagination-button button-next">&rsaquo;</a>
-                            <a href="<?php printf($link, $maxpages); ?>" class="pagination-button button-last">&raquo;</a>
-                        <?php } else { ?>
-                            <span class="pagination-button button-next disabled">&rsaquo;</span>
-                            <span class="pagination-button button-last disabled">&raquo;</span>
-                        <?php } ?>
-                    </div>
+                            <?php if($next !== false){ ?>
+                                <a href="<?php printf($link, $next); ?>" class="pagination-button button-next">&rsaquo;</a>
+                                <a href="<?php printf($link, $maxpages); ?>" class="pagination-button button-last">&raquo;</a>
+                            <?php } else { ?>
+                                <span class="pagination-button button-next disabled">&rsaquo;</span>
+                                <span class="pagination-button button-last disabled">&raquo;</span>
+                            <?php } ?>
+                        </div>
                     </div>
                 <?php
             }
@@ -210,7 +228,7 @@
          |  @since  0.1.0
          */
         public function comment($comment, $key){
-            global $users, $security, $snicker;
+            global $users, $security, $Snicker;
 
             // Get Page
             $page = new Page($comment->page_key());
@@ -223,9 +241,9 @@
 
             // Render
             $token = $security->getTokenCSRF();
-            $depth = (int) $snicker->getValue("comment_depth");
-            $url = $page->permalink() . "?action=snicker&snicker=form&page_key=%s&uid=%s&tokenCSRF=%s";
-            $url = sprintf($url, $comment->page_key(), $comment->uid(), $token);
+            $depth = (int) sn_config("comment_depth");
+            $url = $page->permalink() . "?action=snicker&snicker=rate&&uid=%s&tokenCSRF=%s";
+            $url = sprintf($url, $comment->uid(), $token);
             ?>
                 <div id="comment-<?php echo $comment->uid(); ?>" class="comment">
                     <div class="comment-inner">
@@ -241,7 +259,7 @@
                         </div>
 
                         <div class="comment-content">
-                            <?php if($snicker->getValue("comment_title") !== "disabled" && !empty($comment->title())){ ?>
+                            <?php if(sn_config("comment_title") !== "disabled" && !empty($comment->title())){ ?>
                                 <div class="comment-title"><?php echo $comment->title(); ?></div>
                             <?php } ?>
                             <div class="comment-meta">
@@ -253,13 +271,13 @@
                             </div>
                             <div class="comment-action">
                                 <div class="action-left">
-                                    <?php if($snicker->getValue("comment_enable_like")){ ?>
-                                        <a href="<?php echo $url; ?>&type=like" class="action-like <?php echo ($this->hasLiked($comment->uid())? "active": ""); ?>">
+                                    <?php if(sn_config("comment_enable_like")){ ?>
+                                        <a href="<?php echo $url; ?>&type=like" class="action-like <?php echo ($Snicker->hasLiked($comment->uid())? "active": ""); ?>">
                                             Like <span data-snicker="like"><?php echo $comment->like(); ?></span>
                                         </a>
                                     <?php } ?>
-                                    <?php if($snicker->getValue("comment_enable_dislike")){ ?>
-                                        <a href="<?php echo $url; ?>&type=dislike" class="action-dislike <?php echo ($this->hasDisliked($comment->uid())? "active": ""); ?>">
+                                    <?php if(sn_config("comment_enable_dislike")){ ?>
+                                        <a href="<?php echo $url; ?>&type=dislike" class="action-dislike <?php echo ($Snicker->hasDisliked($comment->uid())? "active": ""); ?>">
                                             Dislike <span data-snicker="dislike"><?php echo $comment->dislike(); ?></span>
                                         </a>
                                     <?php } ?>
@@ -274,40 +292,6 @@
                     </div>
                 </div>
             <?php
-        }
-
-        /*
-         |  HELPER :: HAS LIKED
-         |  @since  0.1.0
-         */
-        protected function hasLiked($uid){
-            if(($rate = Session::get("snicker-ratings")) === false){
-                return false;
-            }
-
-            // Check Comment UID
-            $rate = json_decode($rate, true);
-            if(!array_key_exists($uid, $rate)){
-                return false;
-            }
-            return $rate[$uid] === "like";
-        }
-
-        /*
-         |  HELPER :: HAS DISLIKED
-         |  @since  0.1.0
-         */
-        protected function hasDisliked($uid){
-            if(($rate = Session::get("snicker-ratings")) === false){
-                return false;
-            }
-
-            // Check Comment UID
-            $rate = json_decode($rate, true);
-            if(!array_key_exists($uid, $rate)){
-                return false;
-            }
-            return $rate[$uid] === "dislike";
         }
 
         /*
