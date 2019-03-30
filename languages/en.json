@@ -2,35 +2,5 @@
 	"plugin-data": {
 		"name": "Snicker",
 		"description": "A native, AJAX-enabled FlatFile Comment system for bludit, including a comment subscription and completely compliant with the GDPR!"
-	},
-
-	"__snicker_defaults__": "The default configurable strings",
-	"snicker-success-1": "Thanks for your comment!",
-	"snicker-success-2": "Thanks for your comment, please confirm your subscription via the link we sent to your eMail address!",
-	"snicker-success-3": "Thanks for voting this comment!",
-	"snicker-error-1": "An error occured: The Username or the eMail address is missing!",
-	"snicker-error-2": "An error occured: The comment text is missing!",
-	"snicker-error-3": "An error occured: The comment title is missing!",
-	"snicker-error-4": "An error occured: Your IP address or eMail address has been marked as Spam!",
-	"snicker-error-5": "An unknown error occured, please reload the page and try it again.",
-
-	"__snicker_response__": "AJAX and POST/GET Response Messages",
-	"snicker-response-001": "The requested token is invalid or expired!",
-	"snicker-response-002": "You don't own the respective rights to change the settings!",
-	"snicker-response-003": "The Settings has been updated successfully!",
-	"snicker-response-004": "The Request is incomplete or faulty!",
-	"snicker-response-005": "The comment could not be deleted!",
-	"snicker-response-006": "The comment could not be updated!",
-	"snicker-response-007": "The status of this comment could not be changed!",
-	"snicker-response-008": "The comment could be successfully deleted!",
-	"snicker-response-009": "The comment could be successfully updated!",
-	"snicker-response-010": "The status of this comment could be successfully changed!",
-	"snicker-response-011": "The requested action is unknown or faulty!",
-	"snicker-response-012": "The requested comment does not exist!",
-	"snicker-response-013": "The requested comment status does not exist!",
-	"snicker-response-014": "An unknown error is occured!",
-	"snicker-response-015": "The comment status has been changed successfully!",
-	"snicker-response-016": "The comment status has already been changed!",
-	"snicker-response-017": "The passed comment data is invalid or incomplete.",
-	"snicker-response-018": "The passed comment author is invalid or incomplete."
+	}
 }
