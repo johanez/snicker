@@ -235,7 +235,7 @@
          |  @return multi   The comment UID on success, FALSE on failure.
          */
         public function add($args){
-            global $SnickerIndex;
+            global $SnickerIndex, $SnickerUsers;
 
             // Loop Default Fields
             $row = array();
@@ -292,6 +292,9 @@
             }
             if(!$SnickerIndex->add($uid, $row)){
                 return false;
+            }
+            if(strpos($row["author"], "guest::") === 0){
+                $SnickerUsers->addComment(substr($row["author"], strlen("guest::")), $uid);
             }
 
             // Insert Comment
@@ -392,14 +395,16 @@
         public function delete($uid){
             global $SnickerIndex;
             if(!isset($this->db[$uid])){
-                die("a");
                 return false;
             }
+            $row = $this->db[$uid];
 
             // Remove Index
             if(!$SnickerIndex->delete($uid)){
-                die("b");
                 return false;
+            }
+            if(strpos($row["author"], "guest::") === 0){
+                $SnickerUsers->deleteComment(substr($row["author"], strlen("guest::")), $uid);
             }
 
             // Remove Database Item

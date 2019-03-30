@@ -11,7 +11,7 @@
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
-    global $pages, $security, $Snicker, $SnickerIndex, $SnickerPlugin;
+    global $pages, $security, $Snicker, $SnickerIndex, $SnickerPlugin, $SnickerUsers;
 
     // Get Data
     $limits = $SnickerPlugin->getValue("frontend_per_page");
@@ -104,28 +104,28 @@
                                 if(!(isset($data["page_uuid"]) && is_string($data["page_uuid"]))){
                                     continue;
                                 }
-                                $comment = new Comment($uid, $data["page_uuid"]);
+                                $user = $SnickerUsers->getByString($data["author"]);
                             ?>
                             <tr>
                                 <td class="pt-2 pb-2 pl-3 pr-3">
                                     <?php
                                         if($SnickerPlugin->getValue("comment_title") !== "disabled"){
-                                            $title = $comment->title();
-                                            if(empty($title)){
-                                                echo "<i class='d-inline-block mb-1'>".sn__("No Comment Title available")."</i>";
+                                            if(empty($data["title"])){
+                                                echo '<i class="d-inline-block mb-1">'.sn__("No Comment Title available").'</i>';
                                             } else {
-                                                echo "<b class='d-inline-block mb-1'>{$title}</b>";
+                                                echo '<b class="d-inline-block mb-1">' . $data["title"] . '</b>';
                                             }
                                         }
+                                        echo '<p class="m-0 text-muted" style="font-size:12px;">' . (isset($data["excerpt"])? $data["excerpt"]: "") . '</p>';
                                     ?>
                                 </td>
                                 <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
-                                    <?php $page = new Page($pages->getByUUID($comment->page_uuid())); ?>
+                                    <?php $page = new Page($pages->getByUUID($data["page_uuid"])); ?>
                                     <a href="<?php echo $page->permalink(); ?>" class="btn btn-sm btn-primary"><?php sn_e("View Page"); ?></a>
                                 </td>
                                 <td class="pt-2 pb-2 pl-3 pr-3">
-                                    <span class="d-inline-block mb-1"><?php echo $comment->username(); ?></span>
-                                    <small class='d-block'><?php echo $comment->email(); ?></small>
+                                    <span class="d-inline-block mb-1"><?php echo $user["username"]; ?></span>
+                                    <small class='d-block'><?php echo $user["email"]; ?></small>
                                 </td>
                                 <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
                                     <div class="btn-group">
@@ -134,26 +134,26 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if($status !== "approved"){ ?>
-                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $comment->uid(), "approved"); ?>"><?php sn_e("Approve Comment"); ?></a>
+                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "approved"); ?>"><?php sn_e("Approve Comment"); ?></a>
                                             <?php } ?>
 
                                             <?php if($status !== "rejected"){ ?>
-                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $comment->uid(), "rejected"); ?>"><?php sn_e("Reject Comment"); ?></a>
+                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "rejected"); ?>"><?php sn_e("Reject Comment"); ?></a>
                                             <?php } ?>
 
                                             <?php if($status !== "spam"){ ?>
-                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $comment->uid(), "spam"); ?>"><?php sn_e("Mark as Spam"); ?></a>
+                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "spam"); ?>"><?php sn_e("Mark as Spam"); ?></a>
                                             <?php } ?>
 
                                             <?php if($status !== "pending"){ ?>
                                                 <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $comment->uid(), "pending"); ?>"><?php sn_e("Back to Pending"); ?></a>
+                                                <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "pending"); ?>"><?php sn_e("Back to Pending"); ?></a>
                                             <?php } ?>
                                         </div>
                                     </div>
 
-                                    <a href="<?php echo DOMAIN_ADMIN . "snicker/edit/?uid=" . $comment->key(); ?>" class="btn btn-outline-primary btn-sm"><?php sn_e("Edit"); ?></a>
-                                    <a href="<?php printf($link, "delete", $comment->uid(), "delete"); ?>" class="btn btn-outline-danger btn-sm"><?php sn_e("Delete"); ?></a>
+                                    <a href="<?php echo DOMAIN_ADMIN . "snicker/edit/?uid=" . $uid; ?>" class="btn btn-outline-primary btn-sm"><?php sn_e("Edit"); ?></a>
+                                    <a href="<?php printf($link, "delete", $uid, "delete"); ?>" class="btn btn-outline-danger btn-sm"><?php sn_e("Delete"); ?></a>
                                 </td>
                             </tr>
                         <?php } ?>

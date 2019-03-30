@@ -17,6 +17,7 @@
          */
         protected $dbFields = array(
             "title"         => "",          // Comment Title
+            "excerpt"       => "",          // Comment Excerpt (142)
             "status"        => "",          // Comment Status
             "page_uuid"     => "",          // Comment Page UUID
             "parent_uid"    => "",          // Comment Parent UID
@@ -55,7 +56,7 @@
         public function getPending($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "pending"){
                     $db[$key] = $value;
                 }
@@ -77,7 +78,7 @@
         public function getApproved($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "approved"){
                     $db[$key] = $value;
                 }
@@ -99,7 +100,7 @@
         public function getRejected($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "rejected"){
                     $db[$key] = $value;
                 }
@@ -121,7 +122,7 @@
         public function getSpam($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "spam"){
                     $db[$key] = $value;
                 }
@@ -151,7 +152,7 @@
 
             $count = 0;
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if(in_array($value["status"], $status)){
                     $count++;
                 }
@@ -192,7 +193,7 @@
             // Get List
             $list = array();
             foreach($this->db AS $key => $value){
-				            if(!isset($value["status"]) || empty($value["status"])) continue;
+            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if(in_array($value["status"], $status)){
                     $list[] = $key;
                 }
@@ -234,6 +235,12 @@
                 $row[$field] = $final;
             }
 
+            // Format Excerpt
+            $row["excerpt"] = strip_tags($comment["comment"]);
+            if(strlen($row["excerpt"]) > 102){
+                $row["excerpt"] = substr($row["excerpt"], 0, 99) . "...";
+            }
+
             // Insert and Return
             $this->db[$uid] = $row;
             $this->sortBy();
@@ -270,6 +277,12 @@
                 }
                 settype($final, gettype($value));
                 $row[$field] = $final;
+            }
+
+            // Format Excerpt
+            $row["excerpt"] = strip_tags($comment["comment"]);
+            if(strlen($row["excerpt"]) > 102){
+                $row["excerpt"] = substr($row["excerpt"], 0, 99) . "...";
             }
 
             // Update and Return

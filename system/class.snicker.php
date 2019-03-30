@@ -376,8 +376,15 @@
             ob_start();
             ?>
                 <section id="comments" class="snicker-comments">
-                    <?php print($this->renderForm()); ?>
-                    <?php print($this->renderComments()); ?>
+                    <?php
+                        if(sn_config("frontend_form") === "top"){
+                            print($this->renderForm());
+                        }
+                        print($this->renderComments());
+                        if(sn_config("frontend_form") === "bottom"){
+                            print($this->renderForm());
+                        }
+                    ?>
                 </section>
             <?php
             $content = ob_get_contents();
@@ -490,7 +497,32 @@
 ##
 ##  COMMENT HANDLER
 ##
-        
+     
+        /*
+         |  VALIDATE AND GET BLUDIT USER
+         |  @since  0.1.0
+         |
+         |  @param  string  The username as STRING.
+         |  @param  string  The hashed user auth token as STRING.
+         |
+         |  @return multi   The user object instance on success, FALSE on failure.
+         */
+        public function validateUser($user, $token){
+            global $users;
+
+            // Check Username
+            if(!$users->exists($user)){
+                return false;
+            }
+            $user = new User($data["user"]);
+
+            // Check Token
+            if(md5($user->tokenAuth()) !== $token){
+                return false;
+            }
+            return $user;
+        }
+
         /*
          |  COMMENT :: CHECK IF COMMENTS ARE ALLOWED
          |  @since  0.1.0
@@ -554,7 +586,7 @@
          |  @return <response>
          */
         public function writeComment($data, $key = null){
-            global $login, $pages, $users, $url, $SnickerUsers;
+            global $login, $pages, $users, $url, $SnickerIndex, $SnickerUsers;
 
             // Temp
             if(!is_a($login, "Login")){
@@ -580,7 +612,7 @@
                 if(!isset($data["terms"]) || $data["terms"] !== "1"){
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn_config("string_error_5")
+                        "error"     => sn_config("string_error_6")
                     ), $key);
                 }
             }
@@ -590,7 +622,7 @@
                 if(!isset($data["title"]) || empty($data["title"])){
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn_config("string_error_4")
+                        "error"     => sn_config("string_error_5")
                     ), $key);
                 }
             }
@@ -599,39 +631,33 @@
             if(!isset($data["comment"]) || empty($data["comment"])){
                 return sn_response(array(
                     "referer"   => $referer . "#snicker-comments-form",
-                    "error"     => sn_config("string_error_3")
+                    "error"     => sn_config("string_error_4")
                 ), $key);
             }
 
             // Sanitize User
             if(isset($data["user"]) && isset($data["token"])){
-                if(!$users->exists($data["user"])){
+                if(($user = $this->validateUser($data["user"], $data["token"])) === false){
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn_config("string_error_2")
-                    ), $key);
-                }
-                $user = new User($data["user"]);
-
-                if(md5($user->tokenAuth()) !== $data["token"]){
-                    return sn_response(array(
-                        "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn_config("string_error_2")
+                        "error"     => sn_config("string_error_1")
                     ), $key);
                 }
                 $data["author"] = "bludit::" . $user->username();
             } else if(isset($data["username"]) && isset($data["email"])){
                 if(($user = $SnickerUsers->user($data["username"], $data["email"])) === false){
+                    $email = strtolower(Sanitize::email($data["email"]));
+                    $error = !Valid::email($email)? "string_error_3": "string_error_2";
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn_config("string_error_2")
+                        "error"     => sn_config($error)
                     ), $key);
                 }
                 $data["author"] = "guest::" . $user;
             } else {
                 return sn_response(array(
                     "referer"   => $referer . "#snicker-comments-form",
-                    "error"     => sn_config("string_error_2")
+                    "error"     => sn_config("string_error_1")
                 ), $key);
             }
             $data["subscribe"] = isset($data["subscribe"]);
@@ -655,7 +681,22 @@
                     }
                 }
                 if(sn_config("moderation_approved")){
-                    //@todo Check if he has an approved comment
+                    if(strpos($data["author"], "guest::") === 0){
+                        $user = $SnickerUsers->get(substr($data["author"], strlen("guest::")));
+                        foreach($user["comments"] AS $uuid){
+                            if(($check = $SnickerIndex->getComment($uuid)) === false){
+                                continue;
+                            }
+                            if($check["status"] === "approved"){
+                                $_status = "approved";
+                                break;
+                            }
+                        }
+                        if(isset($_status)){
+                            $data["status"] = "approved";
+                            break;
+                        }
+                    }
                 }
                 $data["status"] = "pending";
                 break;
@@ -845,7 +886,7 @@
                 if(array_key_exists($uid, $data)){
                     if($data[$uid] === $type){
                         return sn_response(array(
-                            "error"   => sn_config("string_error_7"),
+                            "error"   => sn_config("string_error_8"),
                             "referer"   => $referer
                         ));
                     } else {

@@ -195,6 +195,16 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="sn-order" class="col-sm-3 col-form-label"><?php sn_e("Comment Form Position"); ?></label>
+                            <div class="col-sm-9">
+                                <select id="sn-order" name="frontend_form" class="form-control custom-select">
+                                    <option value="top" <?php sn_selected("frontend_form", "top"); ?>><?php sn_e("Show Comment Form above Comments"); ?></option>
+                                    <option value="bottom" <?php sn_selected("frontend_form", "bottom"); ?>><?php sn_e("Show Comment Form below Comments"); ?></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="sn-per-page" class="col-sm-3 col-form-label"><?php sn_e("Comments Per Page"); ?></label>
                             <div class="col-sm-9">
                                 <input type="number" id="sn-per-page" name="frontend_per_page" value="<?php echo sn_config("frontend_per_page"); ?>"
@@ -328,7 +338,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-2" class="col-sm-3 col-form-label"><?php sn_e("Error: Username or eMail is missing"); ?></label>
+                            <label for="sn-error-2" class="col-sm-3 col-form-label"><?php sn_e("Error: Username is invalid"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-2" name="string_error_2" value="<?php echo sn_config("string_error_2"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_2"]; ?>" />
@@ -336,7 +346,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-3" class="col-sm-3 col-form-label"><?php sn_e("Error: Comment Text is missing"); ?></label>
+                            <label for="sn-error-3" class="col-sm-3 col-form-label"><?php sn_e("Error: eMail Address is invalid"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-3" name="string_error_3" value="<?php echo sn_config("string_error_3"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_3"]; ?>" />
@@ -344,7 +354,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-4" class="col-sm-3 col-form-label"><?php sn_e("Error: Comment Title is missing"); ?></label>
+                            <label for="sn-error-4" class="col-sm-3 col-form-label"><?php sn_e("Error: Comment Text is missing"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-4" name="string_error_4" value="<?php echo sn_config("string_error_4"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_4"]; ?>" />
@@ -352,7 +362,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-5" class="col-sm-3 col-form-label"><?php sn_e("Error: Terms not accepted"); ?></label>
+                            <label for="sn-error-5" class="col-sm-3 col-form-label"><?php sn_e("Error: Comment Title is missing"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-5" name="string_error_5" value="<?php echo sn_config("string_error_5"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_5"]; ?>" />
@@ -360,7 +370,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-6" class="col-sm-3 col-form-label"><?php sn_e("Error: Marked as SPAM"); ?></label>
+                            <label for="sn-error-6" class="col-sm-3 col-form-label"><?php sn_e("Error: Terms not accepted"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-6" name="string_error_6" value="<?php echo sn_config("string_error_6"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_6"]; ?>" />
@@ -368,10 +378,18 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="sn-error-7" class="col-sm-3 col-form-label"><?php sn_e("Error: Already Voted"); ?></label>
+                            <label for="sn-error-7" class="col-sm-3 col-form-label"><?php sn_e("Error: Marked as SPAM"); ?></label>
                             <div class="col-sm-9">
                                 <input type="text" id="sn-error-7" name="string_error_7" value="<?php echo sn_config("string_error_7"); ?>"
                                     class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_7"]; ?>" />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="sn-error-8" class="col-sm-3 col-form-label"><?php sn_e("Error: Already Voted"); ?></label>
+                            <div class="col-sm-9">
+                                <input type="text" id="sn-error-8" name="string_error_8" value="<?php echo sn_config("string_error_8"); ?>"
+                                    class="form-control" placeholder="<?php echo $SnickerPlugin->dbFields["string_error_8"]; ?>" />
                             </div>
                         </div>
 

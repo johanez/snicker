@@ -69,7 +69,8 @@
                             <?php echo $user["email"]; ?>
                         </td>
                         <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
-                            0 Comments
+                            <?php echo count(isset($user["comments"])? $user["comments"]: array()); ?> 
+                            <?php sn_e("Comments"); ?>
                         </td>
                         <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
                             <div class="btn-group">

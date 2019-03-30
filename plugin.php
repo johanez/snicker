@@ -119,6 +119,7 @@
                 "frontend_filter"           => "pageEnd",
                 "frontend_template"         => "default",
                 "frontend_order"            => "date_desc",
+                "frontend_form"             => "top",
                 "frontend_per_page"         => 15,
                 "frontend_ajax"             => false,
                 "subscription"              => false,
@@ -131,13 +132,14 @@
                 "string_success_1"          => sn__("Thanks for your comment!"),
                 "string_success_2"          => sn__("Thanks for your comment, please confirm your subscription via the link we sent to your eMail address!"),
                 "string_success_3"          => sn__("Thanks for voting this comment!"),
-                "string_error_1"            => sn__("An unknown error occured, please reload the page and try it again."),
-                "string_error_2"            => sn__("An error occured: The Username or the eMail address is missing!"),
-                "string_error_3"            => sn__("An error occured: The comment text is missing!"),
-                "string_error_4"            => sn__("An error occured: The comment title is missing!"),
-                "string_error_5"            => sn__("An error occured: You need to accept the Terms to comment!"),
-                "string_error_6"            => sn__("An error occured: Your IP address or eMail address has been marked as Spam!"),
-                "string_error_7"            => sn__("An error occured: You already rated this comment!"),
+                "string_error_1"            => sn__("An unknown error occured, please reload the page and try it again!"),
+                "string_error_2"            => sn__("An error occured: The passed Username is invalid or too long (42 characters only)!"),
+                "string_error_3"            => sn__("An error occured: The passed eMail address is invalid!"),
+                "string_error_4"            => sn__("An error occured: The comment text is missing!"),
+                "string_error_5"            => sn__("An error occured: The comment title is missing!"),
+                "string_error_6"            => sn__("An error occured: You need to accept the Terms to comment!"),
+                "string_error_7"            => sn__("An error occured: Your IP address or eMail address has been marked as Spam!"),
+                "string_error_8"            => sn__("An error occured: You already rated this comment!"),
                 "string_terms_of_use"       => sn__("I agree that my data (incl. my anonymized IP address) gets stored!")
             );
 
@@ -370,6 +372,7 @@
                 "comment_title"     => array("optional", "required", "disabled"),
                 "frontend_filter"   => array("disable", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
                 "frontend_order"    => array("date_desc", "date_asc"),
+                "frontend_form"     => array("top", "bottom")
             );
             $emails = array("subscription_from", "subscription_reply");
             $pageid = array("frontend_terms", "subscription_optin", "subscription_ticker");

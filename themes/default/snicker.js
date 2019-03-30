@@ -114,9 +114,9 @@
                             }
                         }
 
-                        showAlert("success", data.success, form.querySelector("article"));
+                        showAlert("success", data.success, form.querySelector(".comment-article"));
                     } else if(data.status === "error"){
-                        showAlert("error", data.error, form.querySelector("article"));
+                        showAlert("error", data.error, form.querySelector(".comment-article"));
                     }
 
                     // Re-Enable Button
@@ -175,14 +175,14 @@
                 });
 
                 // Inject Elements
-                var art = form.querySelector("article");
+                var art = form.querySelector(".comment-article");
                 if(art.querySelector(".comment-reply")){
                     art.replaceChild(reply, art.querySelector(".comment-reply"));
                 } else {
                     art.appendChild(reply);
                 }
 
-                var foo = form.querySelector("footer");
+                var foo = form.querySelector(".comment-footer");
                 if(foo.querySelector("input[name='comment[parent_uid]']")){
                     foo.replaceChild(parent, foo.querySelector("input[name='comment[parent_uid]']"));
                 } else {
