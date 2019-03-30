@@ -55,6 +55,7 @@
         public function getPending($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "pending"){
                     $db[$key] = $value;
                 }
@@ -76,6 +77,7 @@
         public function getApproved($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "approved"){
                     $db[$key] = $value;
                 }
@@ -97,6 +99,7 @@
         public function getRejected($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "rejected"){
                     $db[$key] = $value;
                 }
@@ -118,6 +121,7 @@
         public function getSpam($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if($value["status"] === "spam"){
                     $db[$key] = $value;
                 }
@@ -147,6 +151,7 @@
 
             $count = 0;
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if(in_array($value["status"], $status)){
                     $count++;
                 }
@@ -187,6 +192,7 @@
             // Get List
             $list = array();
             foreach($this->db AS $key => $value){
+				            if(!isset($value["status"]) || empty($value["status"])) continue;
                 if(in_array($value["status"], $status)){
                     $list[] = $key;
                 }
