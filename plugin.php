@@ -138,6 +138,7 @@
                 "string_error_5"            => sn__("An error occured: You need to accept the Terms to comment!"),
                 "string_error_6"            => sn__("An error occured: Your IP address or eMail address has been marked as Spam!"),
                 "string_error_7"            => sn__("An error occured: You already rated this comment!"),
+                "string_terms_of_use"       => sn__("I agree that my data (incl. my anonymized IP address) gets stored!")
             );
 
             // Check Backend

@@ -95,9 +95,9 @@
     padding: 0;
     display: block;
 }
-.snicker-comments form.comment-form header,
-.snicker-comments form.comment-form article,
-.snicker-comments form.comment-form footer{
+.snicker-comments form.comment-form .comment-header,
+.snicker-comments form.comment-form .comment-article,
+.snicker-comments form.comment-form .comment-footer{
     width: 100%;
     height: auto;
     margin: 0;
@@ -105,20 +105,20 @@
     display: block;
     line-height: 1.5em;
 }
-.snicker-comments form.comment-form header{
+.snicker-comments form.comment-form .comment-header{
     background-color: #f4f6f8;
     border-bottom: 1px solid #d0d4d8;
     border-radius: 5px 5px 0 0;
     -moz-border-radius: 5px 5px 0 0;
     -webkit-border-radius: 5px 5px 0 0;
 }
-.snicker-comments form.comment-form header .inner{
+.snicker-comments form.comment-form .comment-header .inner{
     padding: 5px 10px;
 }
-.snicker-comments form.comment-form article{
+.snicker-comments form.comment-form .comment-article{
     padding: 15px 20px;
 }
-.snicker-comments form.comment-form footer{
+.snicker-comments form.comment-form .comment-footer{
     background-color: #f4f6f8;
     border-top: 1px solid #d0d4d8;
     border-radius: 0 0 5px 5px;

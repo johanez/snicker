@@ -35,25 +35,25 @@
             ?>
                 <form class="comment-form" method="post" action="<?php echo $page->permalink(); ?>?snicker=comment#snicker">
                     <?php if(is_array($username)){ ?>
-                        <header>
+                        <div class="comment-header">
                             <input type="hidden" id="comment-user" name="comment[user]" value="<?php echo $username[0]; ?>" />
                             <input type="hidden" id="comment-token" name="comment[token]" value="<?php echo $username[1]; ?>" />
                             <div class="inner">
                                 Logged in as <b><?php echo $username[2]; ?></b> (<?php echo $username[0]; ?>)
                             </div>
-                        </header>
+                        </div>
                     <?php } else { ?>
-                        <header>
+                        <div class="comment-header">
                             <div class="aside aside-left">
                                 <input type="text" id="comment-user" name="comment[username]" value="<?php echo $username; ?>" placeholder="Your Username" />
                             </div>
                             <div class="aside aside-right">
                                 <input type="email" id="comment-mail" name="comment[email]" value="<?php echo $email; ?>" placeholder="Your eMail Address" />
                             </div>
-                        </header>
+                        </div>
                     <?php } ?>
 
-                    <article>
+                    <div class="comment-article">
                         <?php if(Alert::get("snicker-alert") !== false){ ?>
                             <div class="comment-alert alert-error">
                                 <?php Alert::p("snicker-alert"); ?>
@@ -84,9 +84,9 @@
                                 </div>
                             </div>
                         <?php } ?>
-                    </article>
+                    </div>
 
-                    <footer>
+                    <div class="comment-footer">
                         <div class="aside aside-left">
                             <?php if(sn_config("subscription")){ ?>
                                 <input type="checkbox" id="comment-subscribe" name="comment[subscribe]" value="1" />
@@ -96,7 +96,7 @@
                                     <div class="aside aside-full terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                         <label for="comment-terms">
-                                            <?php sn_e("I agree that my data (incl. my anonymized IP address) gets stored!"); ?>
+                                            <?php echo sn_config("string_terms_of_use"); ?>
                                         </label>
                                     </div>
                                 <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
@@ -124,7 +124,7 @@
                                 <div class="aside aside-full terms-of-use">
                                     <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                     <label for="comment-terms">
-                                        <?php sn_e("I agree that my data (incl. my anonymized IP address) gets stored!"); ?>
+                                        <?php echo sn_config("string_terms_of_use"); ?>
                                     </label>
                                 </div>
                             <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
@@ -134,7 +134,7 @@
                                 </div>
                             <?php } ?>
                         <?php } ?>
-                    </footer>
+                    </div>
                 </form>
             <?php
 

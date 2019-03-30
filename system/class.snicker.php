@@ -360,6 +360,15 @@
             if($url->whereAmI() !== "page"){
                 return false;
             }
+            if(!sn_config("comment_on_public") && $page->published()){
+                return false;
+            }
+            if(!sn_config("comment_on_static") && $page->isStatic()){
+                return false;
+            }
+            if(!sn_config("comment_on_sticky") && $page->sticky()){
+                return false;
+            }
             if(!is_a($comments, "Comments")){
                 $comments = new Comments($page->uuid());
             }
