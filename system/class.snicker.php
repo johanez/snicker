@@ -514,7 +514,7 @@
             if(!$users->exists($user)){
                 return false;
             }
-            $user = new User($data["user"]);
+            $user = new User($user);
 
             // Check Token
             if(md5($user->tokenAuth()) !== $token){

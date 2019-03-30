@@ -32,7 +32,7 @@
         public function __construct(){
             parent::__construct(DB_SNICKER_INDEX);
             if(!file_exists(DB_SNICKER_INDEX)){
-                $this->db = $this->dbFields;
+                $this->db = array();
                 $this->save();
             }
         }
