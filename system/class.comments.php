@@ -393,7 +393,7 @@
          |  @return bool    TRUE on success, FALSE on failure.
          */
         public function delete($uid){
-            global $SnickerIndex;
+            global $SnickerIndex, $SnickerUsers;
             if(!isset($this->db[$uid])){
                 return false;
             }
