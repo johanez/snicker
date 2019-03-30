@@ -241,7 +241,7 @@
             $row = array();
             foreach($this->dbFields AS $field => $value){
                 if(isset($args[$field])){
-                    $final = is_string($args[$field])? Sanitize::html($args[$field]): $args[$field];
+                    $final = $args[$field];
                 } else {
                     $final = $value;
                 }
@@ -273,9 +273,24 @@
             }
 
             // Sanitize Strings
-            $row["title"] = Sanitize::html($row["title"]);
-            $row["comment"] = Sanitize::html($row["comment"]);
+            $row["title"] = Sanitize::html(strip_tags($row["title"]));
             $row["author"] = Sanitize::html($row["author"]);
+
+            // Sanitize Comment
+            $allowed  = "<a><b><strong><i><em><u><del><ins><s><strike><p><br><br/><br />";
+            $allowed .= "<mark><abbr><acronym><dfn><ul><ol><li><dl><dt><dd><hr><hr/><hr />";
+            if(sn_config("comment_markup_html")){
+                $row["comment"] = strip_tags($row["comment"], $allowed);
+            } else {
+                $row["comment"] = strip_tags($row["comment"]);
+            }
+            $row["comment"] = Sanitize::html($row["comment"]);
+
+            // Validate Comment
+            $limit = sn_config("comment_limit");
+            if($limit > 0 && strlen($row["comment"]) > $limit){
+                $row["comment"] = substr($row["comment"], 0, $limit);
+            }
 
             // Set Static Data
             $row["rating"] = array(0, 0);

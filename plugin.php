@@ -122,6 +122,9 @@
                 "frontend_form"             => "top",
                 "frontend_per_page"         => 15,
                 "frontend_ajax"             => false,
+                "frontend_avatar"           => "gravatar",
+                "frontend_avatar_users"     => true,   
+                "frontend_gravatar"         => "mp",   
                 "subscription"              => false,
                 "subscription_from"         => "ticker@{$_SERVER["SERVER_NAME"]}",
                 "subscription_reply"        => "noreply@{$_SERVER["SERVER_NAME"]}",
@@ -367,9 +370,11 @@
             $config = array();
 
             // Validations
-            $numbers = array("comment_limit", "comment_depth", "frontend_order");
+            $numbers = array("comment_limit", "comment_depth", "frontend_per_page");
             $selects = array(
                 "comment_title"     => array("optional", "required", "disabled"),
+                "frontend_avatar"   => array("gravatar", "identicon", "static"),
+                "frontend_gravatar" => array("mp", "identicon", "monsterid", "wavatar"),
                 "frontend_filter"   => array("disable", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
                 "frontend_order"    => array("date_desc", "date_asc"),
                 "frontend_form"     => array("top", "bottom")
@@ -637,8 +642,25 @@
             global $Snicker;
 
             if(($theme = $Snicker->getTheme()) === false){
-                //@todo Error
                 return false;
+            }
+            if(sn_config("frontend_avatar") === "identicon"){
+                $path = SNICKER_DOMAIN . "includes/js/";
+                ?>
+                    <script type="text/javascript" src="<?php echo $path; ?>pnglib.js"></script>
+                    <script type="text/javascript" src="<?php echo $path; ?>identicon.js"></script>
+                    <script type="text/javascript">
+                        document.addEventListener("DOMContentLoaded", function(){
+                            var items = document.querySelectorAll("img[data-identicon]");
+                            for(var l = items.length, i = 0; i < l; i++){
+                                var icon = new Identicon(items[i].getAttribute("data-identicon"), {
+                                    size: items[i].style.width
+                                });
+                                items[i].setAttribute("src", "data:image/png;base64," + icon);
+                            }
+                        });
+                    </script>
+                <?php
             }
             if(!empty($theme::SNICKER_JS)){
                 $file = SNICKER_DOMAIN . "themes/" . sn_config("frontend_template") . "/" . $theme::SNICKER_JS;

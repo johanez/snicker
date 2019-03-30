@@ -260,6 +260,9 @@
                     $$var = $data[$var];
                 }
             }
+            if(sn_config("comment_title") === "disabled"){
+                $title = false;
+            }
 
             $login = is_a($login, "Login")? $login: new Login();
             if($login->isLogged()){

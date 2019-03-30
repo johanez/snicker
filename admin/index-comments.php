@@ -26,6 +26,7 @@
         }
 
         // Get Page Comments
+        $show = isset($_GET["show"])? $_GET["show"]: "index";
         $total = $SnickerIndex->count($status);
         $comments = $SnickerIndex->getList($status, $page, $limits);
 
@@ -109,21 +110,27 @@
                             <tr>
                                 <td class="pt-2 pb-2 pl-3 pr-3">
                                     <?php
+                                        if(!empty($data["parent_uid"]) && $SnickerIndex->exists($data["parent_uid"]) && $show !== "reply"){
+                                            $reply = DOMAIN_ADMIN . "snicker?uid={$uid},{$data["parent_uid"]}&show=reply";
+                                            $reply = '<a href="'.$reply.'">' . $SnickerIndex->getComment($data["parent_uid"])["title"] . '</a>';
+                                            echo "<div class='text-muted mt-1 mb-2' style='font-size:12px;'>" . sn__("Reply To") . ": " . $reply . "</div>";
+                                        }
+
                                         if($SnickerPlugin->getValue("comment_title") !== "disabled"){
                                             if(empty($data["title"])){
-                                                echo '<i class="d-inline-block mb-1">'.sn__("No Comment Title available").'</i>';
+                                                echo '<i class="d-inline-block">'.sn__("No Comment Title available").'</i>';
                                             } else {
-                                                echo '<b class="d-inline-block mb-1">' . $data["title"] . '</b>';
+                                                echo '<b class="d-inline-block">' . $data["title"] . '</b>';
                                             }
                                         }
-                                        echo '<p class="m-0 text-muted" style="font-size:12px;">' . (isset($data["excerpt"])? $data["excerpt"]: "") . '</p>';
+                                        echo '<p class="text-muted m-0 mb-1" style="font-size:12px;">' . (isset($data["excerpt"])? $data["excerpt"]: "") . '</p>';
                                     ?>
                                 </td>
                                 <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
                                     <?php $page = new Page($pages->getByUUID($data["page_uuid"])); ?>
                                     <a href="<?php echo $page->permalink(); ?>" class="btn btn-sm btn-primary"><?php sn_e("View Page"); ?></a>
                                 </td>
-                                <td class="pt-2 pb-2 pl-3 pr-3">
+                                <td class="align-middle pt-2 pb-2 pl-3 pr-3">
                                     <span class="d-inline-block mb-1"><?php echo $user["username"]; ?></span>
                                     <small class='d-block'><?php echo $user["email"]; ?></small>
                                 </td>

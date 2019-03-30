@@ -39,16 +39,16 @@
                             <input type="hidden" id="comment-user" name="comment[user]" value="<?php echo $username[0]; ?>" />
                             <input type="hidden" id="comment-token" name="comment[token]" value="<?php echo $username[1]; ?>" />
                             <div class="inner">
-                                Logged in as <b><?php echo $username[2]; ?></b> (<?php echo $username[0]; ?>)
+                                <?php sn_e("Logged in as %s (%s)", array("<b>" . $username[2] . "</b>", $username[0])); ?>
                             </div>
                         </div>
                     <?php } else { ?>
                         <div class="comment-header">
                             <div class="aside aside-left">
-                                <input type="text" id="comment-user" name="comment[username]" value="<?php echo $username; ?>" placeholder="Your Username" />
+                                <input type="text" id="comment-user" name="comment[username]" value="<?php echo $username; ?>" placeholder="<?php sn_e("Your Username"); ?>" />
                             </div>
                             <div class="aside aside-right">
-                                <input type="email" id="comment-mail" name="comment[email]" value="<?php echo $email; ?>" placeholder="Your eMail Address" />
+                                <input type="email" id="comment-mail" name="comment[email]" value="<?php echo $email; ?>" placeholder="<?php sn_e("Your eMail address"); ?>" />
                             </div>
                         </div>
                     <?php } ?>
@@ -66,18 +66,18 @@
 
                         <?php if($title !== false){ ?>
                             <p>
-                                <input type="text" id="comment-title" name="comment[title]" value="<?php echo $title; ?>" placeholder="Comment Title" />
+                                <input type="text" id="comment-title" name="comment[title]" value="<?php echo $title; ?>" placeholder="<?php sn_e("Comment Title"); ?>" />
                             </p>
                         <?php } ?>
                         <p>
-                            <textarea id="comment-text" name="comment[comment]" placeholder="Your Comment..."><?php echo $message; ?></textarea>
+                            <textarea id="comment-text" name="comment[comment]" placeholder="<?php sn_e("Your Comment..."); ?>"><?php echo $message; ?></textarea>
                         </p>
 
                         <?php if(is_a($reply, "Comment")){ ?>
                             <div class="comment-reply">
                                 <a href="<?php echo $page->permalink(); ?>" class="reply-cancel"></a>
                                 <div class="reply-title">
-                                    <?php echo $reply->username(); ?> wrotes:
+                                    <?php echo $reply->username(); ?> <?php sn_e("wrotes"); ?>:
                                 </div>
                                 <div class="reply-content">
                                     <?php echo $reply->comment(); ?>
@@ -90,7 +90,7 @@
                         <div class="aside aside-left">
                             <?php if(sn_config("subscription")){ ?>
                                 <input type="checkbox" id="comment-subscribe" name="comment[subscribe]" value="1" />
-                                <label for="comment-subscribe">Subscribe via eMail</label>
+                                <label for="comment-subscribe"><?php sn_e("Subscribe via eMail"); ?></label>
                             <?php } else { ?>
                                 <?php if(sn_config("frontend_terms") === "default"){ ?>
                                     <div class="aside aside-full terms-of-use">
@@ -102,7 +102,9 @@
                                 <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
                                     <div class="aside aside-full terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                        <label for="comment-terms">I agree the <a href="" target="_blank">Terms of Use</a>!</label>
+                                        <label for="comment-terms">
+                                            <?php sn_e("I agree the %s!", array('<a href="" target="_blank">'.sn__("Terms of Use").'</a>')); ?>
+                                        </label>
                                     </div>
                                 <?php } ?>
                             <?php } ?>
@@ -113,9 +115,9 @@
                             <input type="hidden" name="action" value="snicker" />
                             <?php if(is_a($reply, "Comment")){ ?>
                                 <input type="hidden" name="comment[parent_uid]" value="<?php echo $reply->uid(); ?>" />
-                                <button name="snicker" value="reply" data-string="Comment">Answer</button>
+                                <button name="snicker" value="reply" data-string="<?php sn_e("Comment"); ?>"><?php sn_e("Answer"); ?></button>
                             <?php } else { ?>
-                                <button name="snicker" value="comment" data-string="Answer">Comment</button>
+                                <button name="snicker" value="comment" data-string="<?php sn_e("Answer"); ?>"><?php sn_e("Comment"); ?></button>
                             <?php } ?>
                         </div>
 
@@ -130,7 +132,9 @@
                             <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
                                 <div class="aside aside-full terms-of-use">
                                     <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                    <label for="comment-terms">I agree the <a href="" target="_blank">Terms of Use</a>!</label>
+                                    <label for="comment-terms">
+                                        <?php sn_e("I agree the %s!", array('<a href="" target="_blank">'.sn__("Terms of Use").'</a>')); ?>
+                                    </label>
                                 </div>
                             <?php } ?>
                         <?php } ?>
@@ -160,15 +164,15 @@
                 ?>
                     <div class="pagination pagination-top">
                         <?php if($cpage === 1){ ?>
-                            <span class="pagination-button button-previous disabled">Previous Comments</span>
+                            <span class="pagination-button button-previous disabled"><?php sn_e("Previous Comments"); ?></span>
                         <?php } else { ?>
-                            <a href="<?php printf($link, $prev); ?>" class="pagination-button button-previous">Previous Comments</a>
+                            <a href="<?php printf($link, $prev); ?>" class="pagination-button button-previous"><?php sn_e("Previous Comments"); ?></a>
                         <?php } ?>
 
                         <?php if($cpage < $maxpages){ ?>
-                            <a href="<?php printf($link, $next); ?>" class="pagination-button button-next">Next Comments</a>
+                            <a href="<?php printf($link, $next); ?>" class="pagination-button button-next"><?php sn_e("Next Comments"); ?></a>
                         <?php } else { ?>
-                            <span class="pagination-button button-next disabled">Next Comments</span>
+                            <span class="pagination-button button-next disabled"><?php sn_e("Next Comments"); ?></span>
                         <?php } ?>
                     </div>
                 <?php
@@ -228,16 +232,11 @@
          |  @since  0.1.0
          */
         public function comment($comment, $key){
-            global $users, $security, $Snicker;
+            global $users, $security, $Snicker, $SnickerUsers;
 
             // Get Page
             $page = new Page($comment->page_key());
-
-            // Check User
-            $user = $users->exists($comment->getValue("username"));
-            if($user && $comment->getValue("uuid") === "bludit"){
-                $user = new User($comment->getValue("username"));
-            }
+            $user = $SnickerUsers->getByString($comment->getValue("author"));
 
             // Render
             $token = $security->getTokenCSRF();
@@ -248,11 +247,11 @@
                 <div id="comment-<?php echo $comment->uid(); ?>" class="comment">
                     <div class="comment-inner">
                         <div class="comment-avatar">
-                            <img src="<?php echo $this->gravatar($comment->email()); ?>" alt="<?php echo $comment->username(); ?>" />
+                            <?php echo $comment->avatar(90); ?>
                             <?php
-                                if($user && $user->username() === $page->username()){
+                                if(isset($user["role"]) && $user["username"] === $page->username()){
                                     echo '<span class="avatar-role">Author</span>';
-                                } else if($user && $user->role() === "admin"){
+                                } else if(isset($user["role"]) && $user["role"] === "admin"){
                                     echo '<span class="avatar-role">Admin</span>';
                                 }
                             ?>
@@ -263,8 +262,12 @@
                                 <div class="comment-title"><?php echo $comment->title(); ?></div>
                             <?php } ?>
                             <div class="comment-meta">
-                                <span class="meta-author">Written by <span class="author-username"><?php echo $comment->username(); ?></span></span>
-                                <span class="meta-date">on <?php echo $comment->date(); ?></span>
+                                <span class="meta-author">
+                                    <?php sn_e("Written by %s", array('<span class="author-username">'.$user["username"].'</span>')); ?>
+                                </span>
+                                <span class="meta-date">
+                                    <?php sn_e("on %s", array($comment->date())); ?>
+                                </span>
                             </div>
                             <div class="comment-comment">
                                 <?php echo $comment->comment(); ?>
@@ -273,18 +276,20 @@
                                 <div class="action-left">
                                     <?php if(sn_config("comment_enable_like")){ ?>
                                         <a href="<?php echo $url; ?>&type=like" class="action-like <?php echo ($Snicker->hasLiked($comment->uid())? "active": ""); ?>">
-                                            Like <span data-snicker="like"><?php echo $comment->like(); ?></span>
+                                            <?php sn_e("Like"); ?> <span data-snicker="like"><?php echo $comment->like(); ?></span>
                                         </a>
                                     <?php } ?>
                                     <?php if(sn_config("comment_enable_dislike")){ ?>
                                         <a href="<?php echo $url; ?>&type=dislike" class="action-dislike <?php echo ($Snicker->hasDisliked($comment->uid())? "active": ""); ?>">
-                                            Dislike <span data-snicker="dislike"><?php echo $comment->dislike(); ?></span>
+                                            <?php sn_e("Dislike"); ?> <span data-snicker="dislike"><?php echo $comment->dislike(); ?></span>
                                         </a>
                                     <?php } ?>
                                 </div>
                                 <div class="action-right">
                                     <?php if($depth === 0 || $depth > $comment->depth()){ ?>
-                                        <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">Reply</a>
+                                        <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">
+                                            <?php sn_e("Reply"); ?>
+                                        </a>
                                     <?php } ?>
                                 </div>
                             </div>
@@ -292,14 +297,5 @@
                     </div>
                 </div>
             <?php
-        }
-
-        /*
-         |  HELPER :: GRAVATAR
-         |  @since  0.1.0
-         */
-        protected function gravatar($email){
-            $hash = md5(strtolower(trim($email)));
-            return "https://www.gravatar.com/avatar/{$hash}?d=mp&s=125";
         }
     }

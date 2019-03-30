@@ -96,11 +96,9 @@
          |  FIELD :: COMMENT RAW
          |  @since  0.1.0
          |
-         |  @param  bool    TRUE to sanitize the raw comment content, FALSE otherwise.
-         |
          |  @return string  The (sanitized) raw content on success, FALSE on failure.
          */
-        public function commentRaw($sanitize = false){
+        public function commentRaw(){
             return $this->getValue("comment");
         }
 
@@ -108,12 +106,18 @@
          |  FIELD :: COMMENT
          |  @since  0.1.0
          |
-         |  @param  bool    TRUE to sanitize the raw comment content, FALSE otherwise.
-         |
          |  @return string  The (sanitized) content on success, FALSE on failure.
          */
-        public function comment($sanitize = false){
-            return $this->getValue("comment");
+        public function comment(){
+            $content = $this->getValue("comment");
+            if(sn_config("comment_markup_html")){
+                $content = Sanitize::htmlDecode($content);
+            }
+            if(sn_config("comment_markup_markdown")){
+                $parsedown = new Parsedown();
+                $content = $parsedown->text($content);
+            }
+            return $content;
         }
 
         /*
@@ -335,7 +339,7 @@
         public function username(){
             global $L, $users, $SnickerUsers;
 
-            list($type, $id) = array_pad(explode("::", $this->getValue("author", 2)), 2, null);
+            list($type, $id) = array_pad(explode("::", $this->getValue("author"), 2), 2, null);
             switch($type){
                 case "bludit":
                     if(!$users->exists($id)){
@@ -361,7 +365,7 @@
         public function email(){
             global $L, $users, $SnickerUsers;
 
-            list($type, $id) = array_pad(explode("::", $this->getValue("author", 2)), 2, null);
+            list($type, $id) = array_pad(explode("::", $this->getValue("author"), 2), 2, null);
             switch($type){
                 case "bludit":
                     if(!$users->exists($id)){
@@ -389,6 +393,54 @@
         }
         public function hasSubscribed(){
             return $this->getValue("subscribe") === true;
+        }
+
+        /*
+         |  FIELD :: GET AVATAR
+         |  @since  0.1.0
+         */
+        public function avatar($size = "64"){
+            $user = $this->username();
+            $email = md5(strtolower(trim($this->email())));
+            $avatar = $this->avatar_url($size);
+
+            // Force Profile Picture
+            $force = false;
+            if(sn_config("frontend_avatar_users")){
+                $force = (strpos($avatar, DOMAIN_UPLOADS_PROFILES) !== false);
+            }
+
+            // Return IMG Tag
+            if(sn_config("frontend_avatar") === "identicon" && !$force){
+                return '<img src="'.$avatar.'" width="'.$size.'px" height="'.$size.'px" data-identicon="'.$email.'" alt="'.$user.'" />';
+            }
+            return '<img src="'.$avatar.'" width="'.$size.'px" height="'.$size.'px" alt="'.$user.'" />';
+        }
+
+        /*
+         |  FIELD :: GET AVATAR URL
+         |  @since  0.1.0
+         */
+        public function avatar_url($size = "64"){
+            global $users;
+
+            // Return Profile Picture
+            if(sn_config("frontend_avatar_users") && strpos($this->getValue("author"), "bludit") === 0){
+                $username = substr($this->getValue("author"), strlen("bludit::"));
+                if($users->exists($username)){
+                    $user = new User($username);
+                    if(($avatar = $user->profilePicture()) !== false){
+                        return $avatar;
+                    }
+                }
+            }
+
+            // Return Gravatar
+            if(sn_config("frontend_avatar") === "gravatar"){
+                $hash = md5(strtolower(trim($this->email())));
+                return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=" . sn_config("frontend_gravatar");
+            }
+            return SNICKER_DOMAIN . "includes/img/default-avatar.jpg";
         }
 
         /*
