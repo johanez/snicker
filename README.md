@@ -3,8 +3,8 @@ Snicker
 
 Snicker is the first and native FlatFile comment system for the Content Management System 
 [Bludit](https://github.com/bludit/bludit). It allows to write and publish comments using basic 
-HTML Syntax or Markdown. It also offers an extensive environment, many settings and possibilities 
-and it is also completely compliant with the GDPR!
+HTML Syntax or Markdown. The Plugin also offers an extensive environment, many settings and 
+possibilities and is also completely compliant with the GDPR!
 
 Attention
 ---------
@@ -41,7 +41,7 @@ Thanks for this awesome packages and projects!
 
 Installation
 ------------
--   Download the [this Plugin](https://github.com/pytesNET/snicker/zipball/master)
+-   Download the [Snicker Plugin](https://github.com/pytesNET/snicker/zipball/master)
 -   Upload it to your `bl-plugins` folder of your Bludit Website
 -   Visit the Bludit Administration and enable the "Snicker" Plugin through "Settings" > "Plugins"
 
