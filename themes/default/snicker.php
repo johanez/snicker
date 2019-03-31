@@ -44,11 +44,13 @@
                         </div>
                     <?php } else { ?>
                         <div class="comment-header">
-                            <div class="aside aside-left">
-                                <input type="text" id="comment-user" name="comment[username]" value="<?php echo $username; ?>" placeholder="<?php sn_e("Your Username"); ?>" />
-                            </div>
-                            <div class="aside aside-right">
-                                <input type="email" id="comment-mail" name="comment[email]" value="<?php echo $email; ?>" placeholder="<?php sn_e("Your eMail address"); ?>" />
+                            <div class="table">
+                                <div class="table-cell align-left">
+                                    <input type="text" id="comment-user" name="comment[username]" value="<?php echo $username; ?>" placeholder="<?php sn_e("Your Username"); ?>" />
+                                </div>
+                                <div class="table-cell align-right">
+                                    <input type="email" id="comment-mail" name="comment[email]" value="<?php echo $email; ?>" placeholder="<?php sn_e("Your eMail address"); ?>" />
+                                </div>
                             </div>
                         </div>
                     <?php } ?>
@@ -93,57 +95,36 @@
                     </div>
 
                     <div class="comment-footer">
-                        <div class="aside aside-left">
-                            <?php if(sn_config("subscription")){ ?>
-                                <input type="checkbox" id="comment-subscribe" name="comment[subscribe]" value="1" />
-                                <label for="comment-subscribe"><?php sn_e("Subscribe via eMail"); ?></label>
-                            <?php } else { ?>
+                        <div class="table">
+                            <div class="table-cell align-left">
                                 <?php if(sn_config("frontend_terms") === "default"){ ?>
-                                    <div class="aside aside-full terms-of-use">
+                                    <div class="terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                         <label for="comment-terms">
                                             <?php echo sn_config("string_terms_of_use"); ?>
                                         </label>
                                     </div>
                                 <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
-                                    <div class="aside aside-full terms-of-use">
+                                    <div class="terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                         <label for="comment-terms">
                                             <?php sn_e("I agree the %s!", array('<a href="" target="_blank">'.sn__("Terms of Use").'</a>')); ?>
                                         </label>
                                     </div>
                                 <?php } ?>
-                            <?php } ?>
+                            </div>
+                            <div class="table-cell align-right">
+                                <input type="hidden" name="tokenCSRF" value="<?php echo $security->getTokenCSRF(); ?>" />
+                                <input type="hidden" name="comment[page_uuid]" value="<?php echo $page->uuid(); ?>" />
+                                <input type="hidden" name="action" value="snicker" />
+                                <?php if(is_a($reply, "Comment")){ ?>
+                                    <input type="hidden" name="comment[parent_uid]" value="<?php echo $reply->uid(); ?>" />
+                                    <button name="snicker" value="reply" data-string="<?php sn_e("Comment"); ?>"><?php sn_e("Answer"); ?></button>
+                                <?php } else { ?>
+                                    <button name="snicker" value="comment" data-string="<?php sn_e("Answer"); ?>"><?php sn_e("Comment"); ?></button>
+                                <?php } ?>
+                            </div>
                         </div>
-                        <div class="aside aside-right">
-                            <input type="hidden" name="tokenCSRF" value="<?php echo $security->getTokenCSRF(); ?>" />
-                            <input type="hidden" name="comment[page_uuid]" value="<?php echo $page->uuid(); ?>" />
-                            <input type="hidden" name="action" value="snicker" />
-                            <?php if(is_a($reply, "Comment")){ ?>
-                                <input type="hidden" name="comment[parent_uid]" value="<?php echo $reply->uid(); ?>" />
-                                <button name="snicker" value="reply" data-string="<?php sn_e("Comment"); ?>"><?php sn_e("Answer"); ?></button>
-                            <?php } else { ?>
-                                <button name="snicker" value="comment" data-string="<?php sn_e("Answer"); ?>"><?php sn_e("Comment"); ?></button>
-                            <?php } ?>
-                        </div>
-
-                        <?php if(sn_config("subscription")){ ?>
-                            <?php if(sn_config("frontend_terms") === "default"){ ?>
-                                <div class="aside aside-full terms-of-use">
-                                    <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                    <label for="comment-terms">
-                                        <?php echo sn_config("string_terms_of_use"); ?>
-                                    </label>
-                                </div>
-                            <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
-                                <div class="aside aside-full terms-of-use">
-                                    <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
-                                    <label for="comment-terms">
-                                        <?php sn_e("I agree the %s!", array('<a href="" target="_blank">'.sn__("Terms of Use").'</a>')); ?>
-                                    </label>
-                                </div>
-                            <?php } ?>
-                        <?php } ?>
                     </div>
                 </form>
             <?php
@@ -251,8 +232,8 @@
             $url = sprintf($url, $comment->uid(), $token);
             ?>
                 <div id="comment-<?php echo $comment->uid(); ?>" class="comment" style="margin-left: <?php echo (15 * ($depth - 1)); ?>px;">
-                    <div class="comment-inner">
-                        <div class="comment-avatar">
+                    <div class="table">
+                        <div class="table-cell comment-avatar">
                             <?php echo $comment->avatar(90); ?>
                             <?php
                                 if(isset($user["role"]) && $user["username"] === $page->username()){
@@ -263,7 +244,7 @@
                             ?>
                         </div>
 
-                        <div class="comment-content">
+                        <div class="table-cell comment-content">
                             <?php if(sn_config("comment_title") !== "disabled" && !empty($comment->title())){ ?>
                                 <div class="comment-title">
                                     <?php echo $comment->title(); ?>
@@ -285,26 +266,29 @@
                             <div class="comment-comment">
                                 <?php echo $comment->comment(); ?>
                             </div>
-                            <div class="comment-action">
-                                <div class="action-left">
-                                    <?php if(sn_config("comment_enable_like")){ ?>
-                                        <a href="<?php echo $url; ?>&type=like" class="action-like <?php echo ($Snicker->hasLiked($comment->uid())? "active": ""); ?>">
-                                            <?php sn_e("Like"); ?> <span data-snicker="like"><?php echo $comment->like(); ?></span>
-                                        </a>
-                                    <?php } ?>
-                                    <?php if(sn_config("comment_enable_dislike")){ ?>
-                                        <a href="<?php echo $url; ?>&type=dislike" class="action-dislike <?php echo ($Snicker->hasDisliked($comment->uid())? "active": ""); ?>">
-                                            <?php sn_e("Dislike"); ?> <span data-snicker="dislike"><?php echo $comment->dislike(); ?></span>
-                                        </a>
-                                    <?php } ?>
-                                </div>
-                                <div class="action-right">
-                                    <?php if($maxdepth === 0 || $maxdepth > $comment->depth()){ ?>
-                                        <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">
-                                            <?php sn_e("Reply"); ?>
-                                        </a>
-                                    <?php } ?>
-                                </div>
+                        </div>
+                    </div>
+
+                    <div class="comment-action">
+                        <div class="table">
+                            <div class="table-cell align-left">
+                                <?php if(sn_config("comment_enable_like")){ ?>
+                                    <a href="<?php echo $url; ?>&type=like" class="action-like <?php echo ($Snicker->hasLiked($comment->uid())? "active": ""); ?>">
+                                        <?php sn_e("Like"); ?> <span data-snicker="like"><?php echo $comment->like(); ?></span>
+                                    </a>
+                                <?php } ?>
+                                <?php if(sn_config("comment_enable_dislike")){ ?>
+                                    <a href="<?php echo $url; ?>&type=dislike" class="action-dislike <?php echo ($Snicker->hasDisliked($comment->uid())? "active": ""); ?>">
+                                        <?php sn_e("Dislike"); ?> <span data-snicker="dislike"><?php echo $comment->dislike(); ?></span>
+                                    </a>
+                                <?php } ?>
+                            </div>
+                            <div class="table-cell align-right">
+                                <?php if($maxdepth === 0 || $maxdepth > $comment->depth()){ ?>
+                                    <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">
+                                        <?php sn_e("Reply"); ?>
+                                    </a>
+                                <?php } ?>
                             </div>
                         </div>
                     </div>

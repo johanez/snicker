@@ -412,7 +412,7 @@
 
             ob_start();
             ?>
-                <section id="comments" class="snicker-comments">
+                <div id="comments" class="snicker-comments">
                     <?php
                         if(sn_config("frontend_form") === "top"){
                             print($this->renderForm());
@@ -422,7 +422,7 @@
                             print($this->renderForm());
                         }
                     ?>
-                </section>
+                </div>
             <?php
             $content = ob_get_contents();
             ob_end_clean();

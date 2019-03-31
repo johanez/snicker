@@ -179,7 +179,7 @@
                 if(art.querySelector(".comment-reply")){
                     art.replaceChild(reply, art.querySelector(".comment-reply"));
                 } else {
-                    art.appendChild(reply);
+                    art.insertBefore(reply, form.querySelector("textarea").parentElement);
                 }
 
                 var foo = form.querySelector(".comment-footer");

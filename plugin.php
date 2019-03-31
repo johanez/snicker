@@ -110,7 +110,7 @@
                 "comment_on_sticky"         => true,
                 "comment_title"             => "optional",
                 "comment_limit"             => 0,
-                "comment_depth"             => 5,
+                "comment_depth"             => 3,
                 "comment_markup_html"       => true,
                 "comment_markup_markdown"   => false,
                 "comment_enable_like"       => true,
@@ -301,7 +301,7 @@
             }
 
             $key = null;
-            if(in_array($data["snicker"], array("add", "edit", "delete", "config", "moderate"))){
+            if(in_array($data["snicker"], array("add", "edit", "delete", "config", "user", "moderate"))){
                 $key = "alert";
             }
 
@@ -355,11 +355,75 @@
                     return $Snicker->renderComment($data);
                 case "rate":
                     return $Snicker->rateComment($data["uid"], $data["type"]);
+                case "users":
+                    return $this->user($data);
                 case "configure":
                     return $this->config($data);
             }
             return $this->response(array(
                 "error" => sn__("The passed action is unknown or invalid!")
+            ), "alert");
+        }
+
+        /*
+         |  API :: HANDLE USERs
+         |  @since  0.1.0
+         */
+        private function user($data){
+            global $SnickerIndex, $SnickerUsers;
+
+            // Validate Data
+            if(!isset($data["uuid"]) || !isset($data["handle"])){
+                return $this->response(array(
+                    "error" => sn__("An unknown error is occured!")
+                ), "alert");
+            }
+
+            // Validata UUID
+            if(!$SnickerUsers->exists($data["uuid"])){
+                return $this->response(array(
+                    "error" => sn__("An unique user ID does not exist!")
+                ), "alert");
+            }
+
+            // Handle 
+            if($data["handle"] === "delete"){
+                $comments = $SnickerUsers->db[$data["uuid"]]["comments"];
+                foreach($comments AS $uid){
+                    if(!$SnickerIndex->exists($uid)){
+                        continue;
+                    }
+                    $index = $SnickerIndex->getComment($uid);
+                    $comment = new Comments($index["page_uuid"]);
+
+                    if(isset($data["anonymize"]) && $data["anonymize"] === "true"){
+                        $comment = new Comments($index["page_uuid"]);
+                        $comment->edit($uid, array("author" => "anonymous"));
+                    } else {
+                        $comment = new Comments($index["page_uuid"]);
+                        $comment->delete($uid);
+                    }
+                }
+                $status = $SnickerUsers->delete($data["uuid"]);
+            } else if($data["handle"] === "block"){
+                $status = $SnickerUsers->edit($data["uuid"], null, null, true);
+            } else if($data["handle"] === "unblock"){
+                $status = $SnickerUsers->edit($data["uuid"], null, null, false);
+            }
+
+            // Redirect
+            if(!isset($status)){
+                return $this->response(array(
+                    "error" => sn__("The passed action is unknown or invalid!")
+                ), "alert");
+            }
+            if($status === false){
+                return $this->response(array(
+                    "error" => sn__("An unknown error is occured!")
+                ), "alert");
+            }
+            return $this->response(array(
+                "success" => sn__("The action has been performed successfully!")
             ), "alert");
         }
 
@@ -461,7 +525,7 @@
             $this->db = array_merge($this->db, $config);
             if(!$this->save()){
                 return $this->response(array(
-                    "error" => sn__("An unknown error is occured")
+                    "error" => sn__("An unknown error is occured!")
                 ), "alert");
             }
             return $this->response(array(

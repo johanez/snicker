@@ -35,13 +35,12 @@
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
     background-color: #343a40;
 }
-
-
 .nav.nav-pills .nav-link.nav-pending{
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
 }
 .nav.nav-pills .nav-link.nav-pending.active{
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #007bff;
 }
 .nav.nav-pills .nav-link.nav-pending .badge{

@@ -152,6 +152,46 @@
         }
 
         /*
+         |  GET LIST
+         |  @since  0.1.0
+         |
+         |  @param  string  The string to be searched or NULL.
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |
+         |  @return array   The respective user keys with an ARRAY or FALSE on failure.
+         */
+        public function getList($search = null, $page = 1, $limit = -1){
+            if($search !== null){
+                $list = array();
+                foreach($this->db AS $uuid => $fields){
+                    if(stripos($fields["username"], $search) === false){
+                        continue;
+                    }
+                    if(stripos($fields["email"], $search) === false){
+                        continue;
+                    }
+                    $list[$uuid] = $fields;
+                }                
+            } else {
+                $list = $this->db;
+            }
+
+            // Limit
+            if($limit == -1){
+                return $list;
+            }
+
+            // Offset
+            $offset = $limit * ($page - 1);
+            $count  = min(($offset + $limit - 1), count($list));
+            if($offset < 0 || $offset > $count){
+                return false;
+            }
+            return array_slice($list, $offset, $limit, true);
+        }
+
+        /*
          |  MAIN USER HANDLER
          |  @since  0.1.0
          |
