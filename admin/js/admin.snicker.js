@@ -31,6 +31,23 @@
         "use strict";
 
         /*
+         |  BOOTSTRAP POPOVER
+         |  @since  0.1.0
+         */
+        jQuery('[data-toggle="popover"]').popover({
+            content: function(){
+                var data = d.querySelector(this.getAttribute("data-target"));
+                return data.innerHTML;
+            },
+            html: true
+        }).click(function(event){
+            event.preventDefault();
+        }).on("inserted.bs.popover", function(event){
+            d.querySelector("#" + this.getAttribute("aria-describedby")).style.width = "410px";
+            d.querySelector("#" + this.getAttribute("aria-describedby")).style.maxWidth = "410px";
+        })
+
+        /*
          |  MAIN MENU LINK HANDLER
          |  @since  0.1.0
          */

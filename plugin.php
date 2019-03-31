@@ -113,6 +113,7 @@
                 "comment_depth"             => 3,
                 "comment_markup_html"       => true,
                 "comment_markup_markdown"   => false,
+                "comment_vote_storage"      => "session",
                 "comment_enable_like"       => true,
                 "comment_enable_dislike"    => true,
                 "frontend_captcha"          => "gregwar",
@@ -158,7 +159,8 @@
         public function installed(){
             global $Snicker,            // Main Comment Handler
                    $SnickerIndex,       // Main Comment Indexer
-                   $SnickerUsers;       // Main Comment Users
+                   $SnickerUsers,       // Main Comment Users
+                   $SnickerVotes;       // Main Comment Votes
             
             if(file_exists($this->filenameDb)){
                 if(!defined("SNICKER")){
@@ -171,6 +173,7 @@
                     define("DB_SNICKER_COMMENTS", $this->workspace() . "pages" . DS);
                     define("DB_SNICKER_INDEX", $this->workspace() . "comments-index.php");
                     define("DB_SNICKER_USERS", $this->workspace() . "comments-users.php");
+                    define("DB_SNICKER_VOTES", $this->workspace() . "comments-votes.php");
 
                     // Pages Filter
                     if(!file_exists(DB_SNICKER_COMMENTS)){
@@ -183,12 +186,14 @@
                     require_once "system/class.comments.php";
                     require_once "system/class.comments-index.php";
                     require_once "system/class.comments-users.php";
+                    require_once "system/class.comments-votes.php";
                     require_once "system/class.snicker.php";
                     require_once "includes/autoload.php";
                 } else {
                     $Snicker      = new Snicker();
                     $SnickerIndex = new CommentsIndex();
                     $SnickerUsers = new CommentsUsers();
+                    $SnickerVotes = new CommentsVotes();
                     $this->request();
                 }
                 return true;
@@ -438,13 +443,14 @@
             // Validations
             $numbers = array("comment_limit", "comment_depth", "frontend_per_page");
             $selects = array(
-                "comment_title"     => array("optional", "required", "disabled"),
-                "frontend_captcha"  => array("disabled", "gregwar", "recaptcha"),
-                "frontend_avatar"   => array("gravatar", "identicon", "static"),
-                "frontend_gravatar" => array("mp", "identicon", "monsterid", "wavatar"),
-                "frontend_filter"   => array("disabled", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
-                "frontend_order"    => array("date_desc", "date_asc"),
-                "frontend_form"     => array("top", "bottom")
+                "comment_title"         => array("optional", "required", "disabled"),
+                "comment_vote_storage"  => array("cookie", "session", "database"),
+                "frontend_captcha"      => array("disabled", "gregwar", "recaptcha"),
+                "frontend_avatar"       => array("gravatar", "identicon", "static"),
+                "frontend_gravatar"     => array("mp", "identicon", "monsterid", "wavatar"),
+                "frontend_filter"       => array("disabled", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
+                "frontend_order"        => array("date_desc", "date_asc"),
+                "frontend_form"         => array("top", "bottom")
             );
             $emails = array("subscription_from", "subscription_reply");
             $pageid = array("frontend_terms", "subscription_optin", "subscription_ticker");

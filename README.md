@@ -1,16 +1,49 @@
 Snicker
 =======
 
-### Attention
-You're on the **unstable**, possibly **dangerous** and **incomplete** Branch of the Snicker
-FlatFile Comment-Environment plugin for the Bludit Content Management System. You should NEVER use
-this build on productive / working websites, this build is ONLY for the development and testing!
+Snicker is the first and native FlatFile comment system for the Content Management System 
+[Bludit](https://github.com/bludit/bludit). It offers an extensive environment, many settings and 
+possibilities as is also completely compliant with the GDPR!
 
-You have been warned!
+Attention
+---------
+This is the **unstable**, possibly **dangerous** and **incomplete** Repository Branch of the Snicker 
+Comment Plugin. You should NEVER use this version on productive or working websites. This build is 
+ONLY for development and testing purposes!
 
-### Missing Features
-The following features are currently / still missing.
+You've been warned!
 
-- Some other Stuff...
-- Test all the Stuff...
-- Clean Up...
+Features
+--------
+-   Depth-Based Commenting with many settings
+-   Configurable Strings and Frontend View
+-   AJAX Support to prevent Page-Reloads
+-   User-Management for Not-Logged-In Users
+-   Moderatable Comments (Pending, Approved, Rejected, Spam)
+-   Extensive Backend with many possibilities
+
+Requirements
+------------
+-   PHP v5.6.0+
+-   Bludit v3.5.0+
+
+Dependencies
+------------
+-   Snicker use the awesome [Captcha PHP Library](https://github.com/Gregwar/Captcha) made by Grégoire Passault
+-   The Avatars are served per default by [Gravatar](https://de.gravatar.com/), made by Automattic / WordPress
+-   **But** you can also directly use [Identicons](http://identicon.net) instead...
+-   ... where we use the [PHP Identicon Library](https://github.com/yzalis/Identicon) from Benjamin Laugueux
+-   ... and the [JavaScript Identicon Library](https://github.com/stewartlord/identicon.js) from Stewart Lord
+-   ... which itself depends on the [PNG JavaScript Library](https://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/) by Robert Eisele
+
+Thanks.
+
+Installation
+------------
+-   Download the [this Plugin](https://github.com/pytesNET/snicker/zipball/master)
+-   Upload it to the `bl-plugins` folder of your Bludit Website
+-   Visit the Bludit Administration and enable the "Snicker" Plugin through "Settings" > "Plugins"
+
+Copyright & License
+-------------------
+Published under the MIT-License; Copyright &copy; 2019 SamBrishes, pytesNET

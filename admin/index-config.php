@@ -135,6 +135,29 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label"><?php sn_e("Comment Voting"); ?></label>
                             <div class="col-sm-9">
+                                <label for="sn-vote-storage" class="col-form-label-sm mr-2 align-top"><?php sn_e("Store Votes made by Guests in the") ?></label>
+                                <select id="sn-vote-storage" name="comment_vote_storage" class="custom-select custom-select-sm w-auto">
+                                    <option value="cookie" <?php sn_selected("comment_vote_storage", "cookie"); ?>><?php sn_e("Cookie Storage"); ?></option>
+                                    <option value="session" <?php sn_selected("comment_vote_storage", "session"); ?>><?php sn_e("Session Storage"); ?></option>
+                                    <option value="database" <?php sn_selected("comment_vote_storage", "database"); ?>><?php sn_e("Database Storage"); ?></option>
+                                </select>
+                                <a href="#" class="ml-2 align-top" data-container="body" data-toggle="popover" data-placement="left" 
+                                    data-trigger="focus" data-target="#help-content">(<?php sn_e("What?"); ?>)</a>
+                                <div id="help-content" class="hide d-none" style="width: 100%;">
+                                    <p>
+                                        <?php sn_e("The <b>Cookie Storage</b> is located on the Computer of the user. So you don't have the full control AND you require the appropriate permissions from the user."); ?>
+                                    </p>
+                                    <p>
+                                        <?php sn_e("The <b>Session Storage</b> is just stored temporary on the server, it gets cleaned up when the user closes the browser. Therefore you don't need any permissions from the user."); ?>
+                                    </p>
+                                    <p>
+                                        <?php sn_e("The <b>Database Storage</b> generates and stores an anonymized but assignable value of the user, which also requires the appropriate permissions from the user."); ?>
+                                    </p>
+                                    <p class="bg-light border-top" style="margin: -.5rem -.75rem;padding: .5rem .75rem;border-radius: 0 0 3px 3px;">
+                                        <?php sn_e("<b>Please Note:</b> You are responsible for obtaining the appropriate permissions, Snicker just handles the permissions for data send (and stored) via the comment form!"); ?>
+                                    </p>
+                                </div>
+
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" id="sn-like" name="comment_enable_like" value="true"
                                         class="custom-control-input" <?php sn_checked("comment_enable_like"); ?> />

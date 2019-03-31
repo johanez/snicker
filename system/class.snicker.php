@@ -12,8 +12,6 @@
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
     class Snicker{
-        const COOKIE = "snicker-ratings";
-
         /*
          |  AVAILABLE THEMES
          */
@@ -595,17 +593,8 @@
          |  @return bool    TRUE if the user has rated, FALSE if not.
          */
         public function hasRated($uid, $type = null){
-            $data = Cookie::get(self::COOKIE);
-            if(empty($data)){
-                return false;
-            }
-            if(($data = @unserialize($data)) === false){
-                return false;
-            }
-            if(!array_key_exists($uid, $data)){
-                return false;
-            }
-            return ($type === null || $type === $data[$uid]);
+            global $SnickerVotes;
+            return $SnickerVotes->hasVoted($uid, $type);
         }
         public function hasLiked($uid){
             return $this->hasRated($uid, "like");
@@ -897,7 +886,7 @@
          |  @return <response>
          */
         public function rateComment($uid, $type){
-            global $pages, $SnickerIndex;
+            global $pages, $SnickerIndex, $SnickerVotes;
 
             // Check Parameters
             if(($comment = $SnickerIndex->getComment($uid)) === false){
@@ -927,35 +916,31 @@
             $rating = $comments->getCommentDB($uid)["rating"];
             
             // Get Ratings
-            $data = Cookie::get(self::COOKIE);
-            if(!empty($data)){
-                $data = unserialize($data);
-                if(array_key_exists($uid, $data)){
-                    if($data[$uid] === $type){
-                        return sn_response(array(
-                            "error"   => sn_config("string_error_8"),
-                            "referer"   => $referer
-                        ));
-                    } else {
-                        $rating[($data[$uid] == "like")? 0: 1]--;
-                    }
+            if($SnickerVotes->hasVoted($uid, null)){
+                if($SnickerVotes->hasVoted($uid, $type)){
+                    return sn_response(array(
+                        "error"   => sn_config("string_error_8"),
+                        "referer"   => $referer
+                    ));
                 }
-            } else {
-                $data = array();
+                $SnickerVotes->delete($uid);
+                $rating[($type == "like")? 1: 0]--;
+            }
+            if(!$SnickerVotes->add($uid, $type)){
+                return sn_response(array(
+                    "error"   => sn_config("string_error_1"),
+                    "referer"   => $referer
+                ));
             }
             $rating[($type == "like")? 0: 1]++;
 
-            // Handle
+            // Handle & Return
             if($comments->edit($uid, array("rating" => $rating)) === false){
                 return sn_response(array(
                     "error"     => sn_config("string_error_1"),
                     "referer"   => $referer
                 ));
             }
-            $data[$uid] = $type;
-            Cookie::set(self::COOKIE, serialize($data));
-
-            // Return
             return sn_response(array(
                 "success"   => sn_config("string_success_3"),
                 "referer"   => $referer,

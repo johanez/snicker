@@ -376,8 +376,8 @@
 
             // Format Excerpt
             $row["excerpt"] = strip_tags($comment["comment"]);
-            if(strlen($row["excerpt"]) > 102){
-                $row["excerpt"] = substr($row["excerpt"], 0, 99) . "...";
+            if(strlen($row["excerpt"]) > 142){
+                $row["excerpt"] = substr($row["excerpt"], 0, 139) . "...";
             }
 
             // Insert and Return
@@ -420,8 +420,8 @@
 
             // Format Excerpt
             $row["excerpt"] = strip_tags($comment["comment"]);
-            if(strlen($row["excerpt"]) > 102){
-                $row["excerpt"] = substr($row["excerpt"], 0, 99) . "...";
+            if(strlen($row["excerpt"]) > 142){
+                $row["excerpt"] = substr($row["excerpt"], 0, 139) . "...";
             }
 
             // Update and Return
