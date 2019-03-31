@@ -33,7 +33,7 @@
 ##
 
         /*
-         |  GET COMMENT TOKEN
+         |  SECURITY :: GET COMMENT TOKEN
          |  @since  0.1.0
          */
         public function getToken($action){
@@ -74,7 +74,7 @@
         }
 
         /*
-         |  VALIDATE COMMENT TOKEN
+         |  SECURITY :: VALIDATE COMMENT TOKEN
          |  @since  0.1.0
          */
         public function validateToken($action, $nonce){
@@ -112,6 +112,38 @@
             $security->db["snicker"] = $db;
             $security->save();
             return false;
+        }
+
+        /*
+         |  SECURITY :: GENERATE CAPTCHA
+         |  @since  0.1.0
+         |
+         |  @param  string  The user input phrase.
+         |
+         |  @return bool    TRUE if the phrase is valid, FALSE if not.
+         */
+        public function generateCaptcha($width = 150, $height = 40){
+            $captcha = new Gregwar\Captcha\CaptchaBuilder();
+            $captcha->build($width, $height);
+            $_SESSION["captcha"] = $captcha->getPhrase();
+            return '<img src="'.$captcha->inline().'" width="'.$width.'px"  height="'.$height.'px" />';
+        }
+
+        /*
+         |  SECURITY :: VALIDATE CAPTCHA
+         |  @since  0.1.0
+         |
+         |  @param  int     The desired captcha width.
+         |  @param  int     The desired captcha height.
+         |
+         |  @return string  The captcha image within an <img /> tag.
+         */
+        public function validateCaptcha($phrase){
+            if(!isset($_SESSION["captcha"])){
+                return false;
+            }
+            $captcha = new Gregwar\Captcha\CaptchaBuilder($_SESSION["captcha"]);
+            return $captcha->testPhrase($phrase);
         }
 
 
@@ -611,6 +643,16 @@
                 ), $key);
             }
             $comments = $this->getByPage($data["page_uuid"]);
+
+            // Check Captcha
+            if(sn_config("frontend_captcha") === "gregwar"){
+                if(!(isset($data["captcha"]) && $this->validateCaptcha($data["captcha"]))){
+                    return sn_response(array(
+                        "referer"   => $referer . "#snicker-comments-form",
+                        "error"     => sn__("The answer to the Captcha hasn't been passed or is wrong!")
+                    ), $key);
+                }
+            }
 
             // Check Terms
             if(sn_config("frontend_terms") !== "disabled"){

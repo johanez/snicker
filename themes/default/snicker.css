@@ -308,6 +308,33 @@
     color: #ffffff;
     background-color: #28A745;
 }
+.snicker-comments form.comment-form .comment-captcha{
+    display: block;
+    text-align: right;
+}
+.snicker-comments form.comment-form .comment-captcha input,
+.snicker-comments form.comment-form .comment-captcha input:focus{
+    width: 100px;
+    height: 40px;
+    padding: 5px 10px;
+    display: inline-block;
+    font-size: 16px;
+    line-height: 22px;
+    vertical-align: top;
+    border: 0;
+    background-color: #e0e4e8;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+.snicker-comments form.comment-form .comment-captcha img{
+    max-width: none;
+    display: inline-block;
+    vertical-align: top;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
 .snicker-comments form.comment-form .comment-reply{
     margin: 0;
     padding: 10px 15px;

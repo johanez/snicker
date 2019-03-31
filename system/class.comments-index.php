@@ -46,6 +46,22 @@
         }
 
         /*
+         |  HELPER :: LIMIT LIST
+         |  @since  0.1.0
+         */
+        private function limitList($list, $page, $limit){
+            if($limit == -1){
+                return $list;
+            }
+            $offset = $limit * (max($page, 1) - 1);
+            $count  = min(($offset + $limit - 1), count($list));
+            if($offset < 0 || $offset > $count){
+                return false;
+            }
+            return array_slice($list, $offset, $limit, true);
+        }
+
+        /*
          |  DATA :: GET PENDING INDEX
          |  @since  0.1.0
          |
@@ -56,7 +72,9 @@
         public function getPending($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if($value["status"] === "pending"){
                     $db[$key] = $value;
                 }
@@ -78,7 +96,9 @@
         public function getApproved($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if($value["status"] === "approved"){
                     $db[$key] = $value;
                 }
@@ -100,7 +120,9 @@
         public function getRejected($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if($value["status"] === "rejected"){
                     $db[$key] = $value;
                 }
@@ -122,7 +144,9 @@
         public function getSpam($keys = false){
             $db = array();
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if($value["status"] === "spam"){
                     $db[$key] = $value;
                 }
@@ -152,7 +176,9 @@
 
             $count = 0;
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if(in_array($value["status"], $status)){
                     $count++;
                 }
@@ -193,24 +219,137 @@
             // Get List
             $list = array();
             foreach($this->db AS $key => $value){
-            if(!isset($value["status"]) || empty($value["status"])) continue;
+                if(!isset($value["status"]) || empty($value["status"])){
+                    continue;
+                }
                 if(in_array($value["status"], $status)){
                     $list[] = $key;
                 }
             }
+            return $this->limitList($list, $page, $limit);
+        }
 
-            // Limit
-            if($limit == -1){
-                return $list;
+        /*
+         |  DATA :: LIST COMMENTS BY UUID
+         |  @since  0.1.0
+         |
+         |  @param  multi   A single page UUID as STRING, multiple as ARRAY.
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |
+         |  @return array   The respective unique comment IDs as ARRAY, FALSE on failure.
+         */
+        public function getListByUUID($uuid, $page = 1, $limit = -1){
+            if(!is_array($uuid)){
+                $uuid = array($uuid);
             }
 
-            // Offset
-            $offset = $limit * (max($page, 1) - 1);
-            $count  = min(($offset + $limit - 1), count($list));
-            if($offset < 0 || $offset > $count){
-                return false;
+            // Get List
+            $list = array();
+            foreach($this->db AS $key => $value){
+                if(!isset($value["page_uuid"]) || empty($value["page_uuid"])){
+                    continue;
+                }
+                if(in_array($value["page_uuid"], $uuid)){
+                    $list[] = $key;
+                }
             }
-            return array_slice($list, $offset, $limit, true);
+            return $this->limitList($list, $page, $limit);
+        }
+
+        /*
+         |  DATA :: LIST COMMENTS BY PARENT
+         |  @since  0.1.0
+         |
+         |  @param  multi   A single comment UID as STRING.
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |
+         |  @return array   The respective unique comment IDs as ARRAY, FALSE on failure.
+         */
+        public function getListByParent($uid, $page = 1, $limit = -1){
+            if(!is_string($uid) || !$this->exists($uid)){
+                return array();
+            }
+
+            // Get List
+            $list = array($uid);
+            foreach($this->db AS $key => $value){
+                if(!isset($value["parent_uid"]) || empty($value["parent_uid"])){
+                    continue;
+                }
+                if($value["parent_uid"] === $uid){
+                    $list[] = $key;
+                }
+            }
+            return $this->limitList($list, $page, $limit);
+        }
+
+        /*
+         |  DATA :: LIST COMMENTS BY USER
+         |  @since  0.1.0
+         |
+         |  @param  string  A single username, unique user id or eMail address.
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |
+         |  @return array   The respective unique comment IDs as ARRAY, FALSE on failure.
+         */
+        public function getListByUser($string, $page = 1, $limit = -1){
+            global $users, $SnickerUsers;
+
+            // Get Member / Guest
+            $guest = false;
+            $member = false;
+            if(Valid::email($string)){
+                if(($user = $users->getByEmail($string)) !== false){
+                    $member = "bludit::{$user}";
+                }
+            } else {
+                if($users->exists($string)){
+                    $member = "bludit::{$string}";
+                }
+            }
+            if(($user = $SnickerUsers->get($string)) !== false){
+                $guest = "guest::{$user["uuid"]}";
+            }
+            if(!$member && !$guest){
+                return array();
+            }
+
+            // Get List
+            $list = array();
+            foreach($this->db AS $key => $value){
+                if(!isset($value["author"]) || empty($value["author"])){
+                    continue;
+                }
+                if($value["author"] == $member || $value["author"] == $guest){
+                    $list[] = $key;
+                }
+            }
+            return $this->limitList($list, $page, $limit);
+        }
+
+        /*
+         |  DATA :: SEARCH COMMENTS BY TITLE & EXCERPT
+         |  @since  0.1.0
+         |
+         |  @param  string  The string to be searched.
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |
+         |  @return array   The respective unique comment IDs as ARRAY, FALSE on failure.
+         */
+        public function searchComments($search, $page = 1, $limit = -1){
+            $list = array();
+            foreach($this->db AS $key => $value){
+                if(isset($value["title"]) && stripos($value["title"], $search) !== false){
+                    $list[] = $key;
+                } else if(isset($value["excerpt"]) && stripos($value["excerpt"], $search) !== false){
+                    $list[] = $key;
+                }
+            }
+            return $this->limitList($list, $page, $limit);
         }
 
 

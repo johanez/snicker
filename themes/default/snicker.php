@@ -22,7 +22,7 @@
          |  @since  0.1.0
          */
         public function form($username = "", $email = "", $title = "", $message = ""){
-            global $comments, $page, $security;
+            global $comments, $page, $security, $Snicker;
 
             if(empty($security->getTokenCSRF())){
                 $security->generateTokenCSRF();
@@ -72,7 +72,13 @@
                         <p>
                             <textarea id="comment-text" name="comment[comment]" placeholder="<?php sn_e("Your Comment..."); ?>"><?php echo $message; ?></textarea>
                         </p>
-
+                        <?php if(sn_config("frontend_captcha") === "gregwar"){ ?>
+                            <div class="comment-captcha">
+                                <input type="text" name="comment[captcha]" value="" placeholder="<?php sn_e("Answer"); ?>" />
+                                <?php echo $Snicker->generateCaptcha(); ?>
+                            </div>
+                        <?php } ?>
+                        
                         <?php if(is_a($reply, "Comment")){ ?>
                             <div class="comment-reply">
                                 <a href="<?php echo $page->permalink(); ?>" class="reply-cancel"></a>
@@ -293,7 +299,7 @@
                                     <?php } ?>
                                 </div>
                                 <div class="action-right">
-                                    <?php if($maxdepth === 0 || $maxdepth >= $comment->depth()){ ?>
+                                    <?php if($maxdepth === 0 || $maxdepth > $comment->depth()){ ?>
                                         <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">
                                             <?php sn_e("Reply"); ?>
                                         </a>

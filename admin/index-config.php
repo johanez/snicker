@@ -169,11 +169,21 @@
                         </div>
 
                         <div class="form-group row">
+                            <label for="sn-captcha" class="col-sm-3 col-form-label"><?php sn_e("Comment Captcha"); ?></label>
+                            <div class="col-sm-9">
+                                <select id="sn-captcha" name="frontend_captcha" class="form-control custom-select">
+                                    <option value="disabled" <?php sn_selected("frontend_captcha", "disabled"); ?>><?php sn_e("Disable Captcha"); ?></option>
+                                    <option value="gregwar" <?php sn_selected("frontend_captcha", "gregwar"); ?>><?php sn_e("Use local Captcha (by Gregway)"); ?></option>
+                                    <option value="recaptcha" <?php sn_selected("frontend_captcha", "recaptcha"); ?> disabled="disabled"><?php sn_e("Use Googles reCaptcha (Not available yet)"); ?></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
                             <label for="sn-template" class="col-sm-3 col-form-label"><?php sn_e("Comment Template"); ?></label>
                             <div class="col-sm-9">
                                 <select id="sn-template" name="frontend_template" class="form-control custom-select">
                                     <?php
-                                        
                                         foreach($Snicker->themes AS $key => $theme){
                                             ?>
                                                 <option value="<?php echo $key; ?>" <?php sn_selected("frontend_template", $key); ?>><?php echo $theme::SNICKER_NAME;  ?></option>

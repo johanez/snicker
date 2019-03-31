@@ -17,21 +17,39 @@
     $count = count($Snicker->getIndex("pending"));
     $count = ($count > 99)? "99+": $count;
 
-    // Current Tab
-    $current = isset($_GET["tab"])? $_GET["tab"]: "pending";
+    // Tab Strings
+    $strings = array(
+        "pending"       => sn__("Pending"),
+        "approved"      => sn__("Approved"),
+        "rejected"      => sn__("Rejected"),
+        "spam"          => sn__("Spam"),
+        "search"        => sn__("Search Comments"),
+        "single"        => sn__("Single Comment"),
+        "uuid"          => sn__("Page Comments"),
+        "user"          => sn__("User Comments")
+    );
 
+    // Current Tab
+    $view = "index";
+    if(isset($_GET["view"]) && in_array($_GET["view"], array("search", "single", "uuid", "user"))){
+        $view = $current = $_GET["view"];
+        $tabs = array($view);
+    } else {
+        $current = isset($_GET["tab"])? $_GET["tab"]: "pending";
+        $tabs = array("pending", "approved", "rejected", "spam");
+    }
 ?>
 <h2 class="mt-0 mb-3">
     <span class="oi oi-comment-square" style="font-size: 0.7em;"></span> Snicker <?php sn_e("Comments"); ?>
 </h2>
 
 <ul class="nav nav-pills" data-handle="tabs">
-    <?php foreach(array("pending", "approved", "rejected", "spam") AS $tab){ ?>
+    <?php foreach($tabs AS $tab){ ?>
         <?php $class = "nav-link nav-{$tab}" . ($current === $tab? " active": ""); ?>
         <li class="nav-item">
             <a id="<?php echo $tab; ?>-tab" href="#snicker-<?php echo $tab; ?>" class="<?php echo $class; ?>" data-toggle="tab">
                 <?php
-                    sn_e(ucfirst($tab));
+                    echo $strings[$tab];
                     if($tab === "pending" && !empty($count)){
                         ?> <span class="badge badge-primary"><?php echo $count; ?></span><?php
                     }

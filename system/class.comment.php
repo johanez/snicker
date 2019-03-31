@@ -440,6 +440,15 @@
                 $hash = md5(strtolower(trim($this->email())));
                 return "https://www.gravatar.com/avatar/{$hash}?s={$size}&d=" . sn_config("frontend_gravatar");
             }
+
+            // Return Identicon
+            if(sn_config("frontend_avatar") === "identicon"){
+                $hash = md5(strtolower(trim($this->email())));
+                $ident = new Identicon\Identicon();
+                return $ident->getImageDataUri($hash, $size);
+            }
+
+            // Return Mystery Man
             return SNICKER_DOMAIN . "includes/img/default-avatar.jpg";
         }
 

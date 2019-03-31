@@ -78,9 +78,10 @@
                                     <?php sn_e("Handle"); ?>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right">
-                                    <a class="dropdown-item" href="#"><?php sn_e("Delete"); ?></a>
+                                    <a class="dropdown-item text-danger" href="<?php echo DOMAIN_ADMIN; ?>snicker"><?php sn_e("Delete (Anonymize)"); ?></a>
+                                    <a class="dropdown-item text-danger" href="<?php echo DOMAIN_ADMIN; ?>snicker"><?php sn_e("Delete (Completely)"); ?></a>
                                     <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#"><?php sn_e("Block"); ?></a>
+                                    <a class="dropdown-item" href="<?php echo DOMAIN_ADMIN; ?>snicker"><?php sn_e("Block (eMail and Hash)"); ?></a>
                                 </div>
                             </div>
                         </td>

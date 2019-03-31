@@ -91,7 +91,9 @@
             if(!array_key_exists($uuid, $this->db)){
                 return false;
             }
-            return $this->db[$uuid];
+            $data = $this->db[$uuid];
+            $data["uuid"] = $uuid;
+            return $data;
         }
 
         /*

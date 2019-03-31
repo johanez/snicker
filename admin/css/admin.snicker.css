@@ -32,8 +32,11 @@
 }
 .nav.nav-pills .nav-link.active{
     color: #ffffff;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+    background-color: #343a40;
 }
+
+
 .nav.nav-pills .nav-link.nav-pending{
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
@@ -48,18 +51,21 @@
 }
 .nav.nav-pills .nav-link.nav-pending.active .badge{
     color: #007bff;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #fff;
 }
 .nav.nav-pills .nav-link.nav-approved{
     border-radius: 0 !important;
 }
 .nav.nav-pills .nav-link.nav-approved.active{
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #28A745;
 }
 .nav.nav-pills .nav-link.nav-rejected{
     border-radius: 0 !important;
 }
 .nav.nav-pills .nav-link.nav-rejected.active{
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #FFC107;
 }
 .nav.nav-pills .nav-link.nav-spam{
@@ -67,14 +73,11 @@
     border-bottom-left-radius: 0 !important;
 }
 .nav.nav-pills .nav-link.nav-spam.active{
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #DC3545;
 }
 .nav.nav-pills .nav-link.nav-config{
     font-weight: 400;
-}
-.nav.nav-pills .nav-link.nav-config.active{
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
-    background-color: #343a40;
 }
 .nav.nav-pills .nav-link.nav-config .oi{
     margin-right: 3px;

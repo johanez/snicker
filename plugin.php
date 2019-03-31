@@ -115,6 +115,7 @@
                 "comment_markup_markdown"   => false,
                 "comment_enable_like"       => true,
                 "comment_enable_dislike"    => true,
+                "frontend_captcha"          => "gregwar",
                 "frontend_terms"            => "default",
                 "frontend_filter"           => "pageEnd",
                 "frontend_template"         => "default",
@@ -183,6 +184,7 @@
                     require_once "system/class.comments-index.php";
                     require_once "system/class.comments-users.php";
                     require_once "system/class.snicker.php";
+                    require_once "includes/autoload.php";
                 } else {
                     $Snicker      = new Snicker();
                     $SnickerIndex = new CommentsIndex();
@@ -373,9 +375,10 @@
             $numbers = array("comment_limit", "comment_depth", "frontend_per_page");
             $selects = array(
                 "comment_title"     => array("optional", "required", "disabled"),
+                "frontend_captcha"  => array("disabled", "gregwar", "recaptcha"),
                 "frontend_avatar"   => array("gravatar", "identicon", "static"),
                 "frontend_gravatar" => array("mp", "identicon", "monsterid", "wavatar"),
-                "frontend_filter"   => array("disable", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
+                "frontend_filter"   => array("disabled", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
                 "frontend_order"    => array("date_desc", "date_asc"),
                 "frontend_form"     => array("top", "bottom")
             );
@@ -643,24 +646,6 @@
 
             if(($theme = $Snicker->getTheme()) === false){
                 return false;
-            }
-            if(sn_config("frontend_avatar") === "identicon"){
-                $path = SNICKER_DOMAIN . "includes/js/";
-                ?>
-                    <script type="text/javascript" src="<?php echo $path; ?>pnglib.js"></script>
-                    <script type="text/javascript" src="<?php echo $path; ?>identicon.js"></script>
-                    <script type="text/javascript">
-                        document.addEventListener("DOMContentLoaded", function(){
-                            var items = document.querySelectorAll("img[data-identicon]");
-                            for(var l = items.length, i = 0; i < l; i++){
-                                var icon = new Identicon(items[i].getAttribute("data-identicon"), {
-                                    size: items[i].style.width
-                                });
-                                items[i].setAttribute("src", "data:image/png;base64," + icon);
-                            }
-                        });
-                    </script>
-                <?php
             }
             if(!empty($theme::SNICKER_JS)){
                 $file = SNICKER_DOMAIN . "themes/" . sn_config("frontend_template") . "/" . $theme::SNICKER_JS;

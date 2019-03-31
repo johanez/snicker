@@ -17,18 +17,40 @@
     $limits = $SnickerPlugin->getValue("frontend_per_page");
     $current = isset($_GET["tab"])? $_GET["tab"]: "pending";
 
+    // Get View
+    $view = "index";
+    if(isset($_GET["view"]) && in_array($_GET["view"], array("search", "single", "uuid", "user"))){
+        $view = $current = $_GET["view"];
+        $tabs = array($view);
+    } else {
+        $tabs = array("pending", "approved", "rejected", "spam");
+    }
+
     // Render Comemnts Tab
-    foreach(array("pending", "approved", "rejected", "spam") AS $status){
+    foreach($tabs AS $status){
         if(isset($_GET["tab"]) && $_GET["tab"] === $status){
             $page = max((isset($_GET["page"])? (int) $_GET["page"]: 1), 1);
         } else {
             $page = 1;
         }
 
-        // Get Page Comments
-        $show = isset($_GET["show"])? $_GET["show"]: "index";
-        $total = $SnickerIndex->count($status);
-        $comments = $SnickerIndex->getList($status, $page, $limits);
+        // Get Comments
+        if($view === "index"){
+            $comments = $SnickerIndex->getList($status, $page, $limits);
+            $total = $SnickerIndex->count($status);
+        } else if($view === "search"){
+            $comments = $SnickerIndex->searchComments(isset($_GET["search"])? $_GET["search"]: "");
+            $total = count($comments);
+        } else if($view === "single"){
+            $comments = $SnickerIndex->getListByParent(isset($_GET["single"])? $_GET["single"]: "");
+            $total = count($comments);
+        } else if($view === "uuid"){
+            $comments = $SnickerIndex->getListByUUID(isset($_GET["uuid"])? $_GET["uuid"]: "");
+            $total = count($comments);
+        } else if($view === "user"){
+            $comments = $SnickerIndex->getListByUser(isset($_GET["user"])? $_GET["user"]: "");
+            $total = count($comments);
+        }
 
         // Render Tab Content
         $link = DOMAIN_ADMIN . "snicker?page=%d&tab={$status}#{$status}";
@@ -37,13 +59,14 @@
                 <div class="card shadow-sm" style="margin: 1.5rem 0;">
                     <div class="card-body">
                         <div class="row">
-                            <form class="col-sm-6">
+                            <form class="col-sm-6" method="get" action="<?php echo DOMAIN_ADMIN; ?>snicker">
                                 <div class="form-row align-items-center">
                                     <div class="col-sm-8">
-                                        <input type="text" name="search" value="" class="form-control" placeholder="<?php sn_e("Comment Title or Username"); ?>" />
+                                        <?php $search = isset($_GET["search"])? $_GET["search"]: ""; ?>
+                                        <input type="text" name="search" value="<?php echo $search; ?>" class="form-control" placeholder="<?php sn_e("Comment Title or Excerpt"); ?>" />
                                     </div>
                                     <div class="col-sm-4">
-                                        <button class="btn btn-primary" name="action" value="search"><?php sn_e("Search Comments"); ?></button>
+                                        <button class="btn btn-primary" name="view" value="search"><?php sn_e("Search Comments"); ?></button>
                                     </div>
                                 </div>
                             </form>
@@ -91,10 +114,9 @@
                     <?php foreach(array("thead", "tfoot") AS $tag){ ?>
                         <<?php echo $tag; ?>>
                             <tr class="thead-light">
-                                <th width="38%" class="border-0 p-3 text-uppercase text-muted"><?php sn_e("Comment"); ?></th>
-                                <th width="15%" class="border-0 p-3 text-uppercase text-muted"><?php sn_e("Page"); ?></th>
-                                <th width="22%" class="border-0 p-3 text-uppercase text-muted"><?php sn_e("Author"); ?></th>
-                                <th width="25%" class="border-0 p-3 text-uppercase text-muted text-center"><?php sn_e("Actions"); ?></th>
+                                <th width="56%" class="border-0 p-3 text-uppercase text-muted"><?php sn_e("Comment"); ?></th>
+                                <th width="22%" class="border-0 p-3 text-uppercase text-muted text-center"><?php sn_e("Author"); ?></th>
+                                <th width="22%" class="border-0 p-3 text-uppercase text-muted text-center"><?php sn_e("Actions"); ?></th>
                             </tr>
                         </<?php echo $tag; ?>>
                     <?php } ?>
@@ -108,30 +130,21 @@
                                 $user = $SnickerUsers->getByString($data["author"]);
                             ?>
                             <tr>
-                                <td class="pt-2 pb-2 pl-3 pr-3">
+                                <td class="pt-3 pb-3 pl-3 pr-3">
                                     <?php
-                                        if(!empty($data["parent_uid"]) && $SnickerIndex->exists($data["parent_uid"]) && $show !== "reply"){
-                                            $reply = DOMAIN_ADMIN . "snicker?uid={$uid},{$data["parent_uid"]}&show=reply";
-                                            $reply = '<a href="'.$reply.'">' . $SnickerIndex->getComment($data["parent_uid"])["title"] . '</a>';
-                                            echo "<div class='text-muted mt-1 mb-2' style='font-size:12px;'>" . sn__("Reply To") . ": " . $reply . "</div>";
+                                        if($SnickerPlugin->getValue("comment_title") !== "disabled" && !empty($data["title"])){
+                                            echo '<b class="d-inline-block">' . $data["title"] . '</b>';
                                         }
-
-                                        if($SnickerPlugin->getValue("comment_title") !== "disabled"){
-                                            if(empty($data["title"])){
-                                                echo '<i class="d-inline-block">'.sn__("No Comment Title available").'</i>';
-                                            } else {
-                                                echo '<b class="d-inline-block">' . $data["title"] . '</b>';
-                                            }
+                                        echo '<p class="text-muted m-0" style="font-size:12px;">' . (isset($data["excerpt"])? $data["excerpt"]: "") . '</p>';
+                                        if(!empty($data["parent_uid"]) && $SnickerIndex->exists($data["parent_uid"]) && $view !== "single"){
+                                            $reply = DOMAIN_ADMIN . "snicker?view=single&single={$uid}";
+                                            $reply = '<a href="'.$reply.'" title="'.sn__("Show all replies").'">' . $SnickerIndex->getComment($data["parent_uid"])["title"] . '</a>';
+                                            echo "<div class='text-muted mt-1' style='font-size:12px;'>" . sn__("Reply To") . ": " . $reply . "</div>";
                                         }
-                                        echo '<p class="text-muted m-0 mb-1" style="font-size:12px;">' . (isset($data["excerpt"])? $data["excerpt"]: "") . '</p>';
                                     ?>
                                 </td>
-                                <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
-                                    <?php $page = new Page($pages->getByUUID($data["page_uuid"])); ?>
-                                    <a href="<?php echo $page->permalink(); ?>" class="btn btn-sm btn-primary"><?php sn_e("View Page"); ?></a>
-                                </td>
                                 <td class="align-middle pt-2 pb-2 pl-3 pr-3">
-                                    <span class="d-inline-block mb-1"><?php echo $user["username"]; ?></span>
+                                    <span class="d-inline-block"><?php echo $user["username"]; ?></span>
                                     <small class='d-block'><?php echo $user["email"]; ?></small>
                                 </td>
                                 <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
@@ -140,18 +153,19 @@
                                             <?php sn_e("Change"); ?>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
+                                            <a class="dropdown-item text-primary" href="<?php echo DOMAIN_ADMIN . "snicker/edit/?uid=" . $uid; ?>"><?php sn_e("Edit Comment"); ?></a>
+                                            <a class="dropdown-item text-danger" href="<?php printf($link, "delete", $uid, "delete"); ?>"><?php sn_e("Delete Comment"); ?></a>
+                                            <div class="dropdown-divider"></div>
+
                                             <?php if($status !== "approved"){ ?>
                                                 <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "approved"); ?>"><?php sn_e("Approve Comment"); ?></a>
                                             <?php } ?>
-
                                             <?php if($status !== "rejected"){ ?>
                                                 <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "rejected"); ?>"><?php sn_e("Reject Comment"); ?></a>
                                             <?php } ?>
-
                                             <?php if($status !== "spam"){ ?>
                                                 <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "spam"); ?>"><?php sn_e("Mark as Spam"); ?></a>
                                             <?php } ?>
-
                                             <?php if($status !== "pending"){ ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a class="dropdown-item" href="<?php printf($link, "moderate", $uid, "pending"); ?>"><?php sn_e("Back to Pending"); ?></a>
@@ -159,8 +173,8 @@
                                         </div>
                                     </div>
 
-                                    <a href="<?php echo DOMAIN_ADMIN . "snicker/edit/?uid=" . $uid; ?>" class="btn btn-outline-primary btn-sm"><?php sn_e("Edit"); ?></a>
-                                    <a href="<?php printf($link, "delete", $uid, "delete"); ?>" class="btn btn-outline-danger btn-sm"><?php sn_e("Delete"); ?></a>
+                                    <?php $page = new Page($pages->getByUUID($data["page_uuid"])); ?>
+                                    <a href="<?php echo $page->permalink(); ?>#comment-<?php echo $uid; ?>" class="btn btn-outline-primary btn-sm" target="_blank"><?php sn_e("View"); ?></a>
                                 </td>
                             </tr>
                         <?php } ?>
