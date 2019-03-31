@@ -95,6 +95,23 @@
         }
 
         /*
+         |  GET CURRENT USER ID
+         |  @since  0.1.0
+         |
+         |  @return multi   The user UUID on success, FALSE on failure.
+         */
+        public function getCurrent(){
+            global $security;
+            $hash = md5($security->getUserIp() . $_SERVER["HTTP_USER_AGENT"]);
+            foreach($this->db AS $uuid => $fields){
+                if($fields["hash"] === $hash){
+                    return $uuid;
+                }
+            }
+            return false;
+        }
+
+        /*
          |  GET USER
          |  @since  0.1.0
          |

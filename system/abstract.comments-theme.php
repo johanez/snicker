@@ -31,7 +31,7 @@
          |  @param  object  The comment instance.
          |  @param  string  The unique comment UID.
          */
-        abstract public function comment($comment, $uid);
+        abstract public function comment($comment, $uid, $depth);
 
         /*
          |  REQUIRED :: PAGINATION

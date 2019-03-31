@@ -110,7 +110,7 @@
                 "comment_on_sticky"         => true,
                 "comment_title"             => "optional",
                 "comment_limit"             => 0,
-                "comment_depth"             => 0,
+                "comment_depth"             => 5,
                 "comment_markup_html"       => true,
                 "comment_markup_markdown"   => false,
                 "comment_enable_like"       => true,

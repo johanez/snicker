@@ -335,8 +335,10 @@
                     if($count > $limit){
                         $this->renderTheme("pagination", array("top", $cpage, $limit, $count, $total), true);
                     }
+                    $list = $comments->getDepthList($cpage, $limit, array("comment", "reply"), array("approved", "pending"));
                     foreach($list AS $key){
-                        $this->renderTheme("comment", array(new Comment($key, $page->uuid()), $key), true);
+                        $comment = new Comment($key, $page->uuid());
+                        $this->renderTheme("comment", array($comment, $key, $comment->depth()), true);
                     }
                     if($count > $limit){
                         $this->renderTheme("pagination", array("bottom", $cpage, $limit, $count, $total), true);

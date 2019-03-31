@@ -231,7 +231,7 @@
          |  RENDER :: COMMENT
          |  @since  0.1.0
          */
-        public function comment($comment, $key){
+        public function comment($comment, $uid, $depth){
             global $users, $security, $Snicker, $SnickerUsers;
 
             // Get Page
@@ -240,11 +240,11 @@
 
             // Render
             $token = $security->getTokenCSRF();
-            $depth = (int) sn_config("comment_depth");
+            $maxdepth = (int) sn_config("comment_depth");
             $url = $page->permalink() . "?action=snicker&snicker=rate&&uid=%s&tokenCSRF=%s";
             $url = sprintf($url, $comment->uid(), $token);
             ?>
-                <div id="comment-<?php echo $comment->uid(); ?>" class="comment">
+                <div id="comment-<?php echo $comment->uid(); ?>" class="comment" style="margin-left: <?php echo (15 * ($depth - 1)); ?>px;">
                     <div class="comment-inner">
                         <div class="comment-avatar">
                             <?php echo $comment->avatar(90); ?>
@@ -259,7 +259,14 @@
 
                         <div class="comment-content">
                             <?php if(sn_config("comment_title") !== "disabled" && !empty($comment->title())){ ?>
-                                <div class="comment-title"><?php echo $comment->title(); ?></div>
+                                <div class="comment-title">
+                                    <?php echo $comment->title(); ?>
+                                    <?php if($comment->status() === "pending"){ ?>
+                                        <span class="comment-moderation"><?php sn_e("This comment hasn't been moderated yet!"); ?></span>
+                                    <?php } ?>
+                                </div>
+                            <?php } else if($comment->status() === "pending"){ ?>
+                                <div class="comment-moderation"><?php sn_e("This comment hasn't been moderated yet!"); ?></div>
                             <?php } ?>
                             <div class="comment-meta">
                                 <span class="meta-author">
@@ -286,7 +293,7 @@
                                     <?php } ?>
                                 </div>
                                 <div class="action-right">
-                                    <?php if($depth === 0 || $depth > $comment->depth()){ ?>
+                                    <?php if($maxdepth === 0 || $maxdepth >= $comment->depth()){ ?>
                                         <a href="<?php echo $page->permalink(); ?>?snicker=reply&uid=<?php echo $comment->key(); ?>#snicker-comments-form" class="action-reply">
                                             <?php sn_e("Reply"); ?>
                                         </a>

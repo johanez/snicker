@@ -195,6 +195,116 @@
         }
 
         /*
+         |  DATA :: GENERATE A DEPTH LIST
+         |  @since  0.1.0
+         |
+         |  @param  int     The current comment page number, starting with 1.
+         |  @param  int     The number of comments to be shown per page.
+         |  @param  multi   The desired comment type as STRING, multiple as ARRAY.
+         |                  Pass `null` to get each comment type.
+         |  @param  multi   The desired comment status as STRING, multiple as ARRAY.
+         |                  Pass `null` to get each comment status.
+         |
+         |  @return array   The respective database keys with an ARRAY or FALSE on failure.
+         */
+        public function getDepthList($page, $limit, $type = array("comment", "reply"), $status = array("approved")){
+            global $login, $SnickerUsers;
+            $this->sortBy();
+
+            // Validate Parameters
+            $type = is_string($type)? array($type): $type;
+            if(!is_array($type)){
+                $type = null;
+            }
+            $status = is_string($status)? array($status): $status;
+            if(!is_array($status)){
+                $type = null;
+            }
+
+            // Get User Pending
+            if(in_array("pending", $status)){
+                if(!is_a($login, "Login")){
+                    $login = new Login();
+                }
+                if($login->isLogged()){
+                    $user = "bludit::" . $login->username();
+                } else {
+                    if(($user = $SnickerUsers->getCurrent()) !== false){
+                        $user = "guest::" . $user;
+                    }
+                }
+            }
+
+            // Format List
+            $list = array();
+            $children = array();
+            foreach($this->db AS $key => $fields){
+                if($type !== null && !in_array($fields["type"], $type)){
+                    continue;
+                }
+                if($status !== null && !in_array($fields["status"], $status)){
+                    continue;
+                }
+                if($fields["status"] === "pending" && $fields["author"] !== $user){
+                    continue;
+                }
+
+                if(!empty($fields["parent_uid"])){
+                    if(!array_key_exists($fields["parent_uid"], $children)){
+                        $children[$fields["parent_uid"]] = array();
+                    }
+                    array_push($children[$fields["parent_uid"]], $key);
+                } else {
+                    array_push($list, $key);
+                }
+            }
+
+            // Offset
+            $count = 0;
+            $offset = $limit * ($page - 1);
+            for(; $count < $offset ;){
+                $key = array_shift($list);
+
+                $count++;
+                if(array_key_exists($key, $children)){
+                    $count += count($children[$key]);
+                    unset($children[$key]);
+                }
+            }
+
+            // Generator
+            $count = 0;
+            foreach($list AS $key){
+                if($count >= $limit){
+                    break;
+                }
+
+                $count++;
+                yield $key;
+                if(!array_key_exists($key, $children)){
+                    continue;
+                }
+                
+                $loop = $key;
+                $depth = array();
+                while(true){
+                    if(empty($depth) && empty($children[$key])){
+                        break;
+                    }
+                    if(array_key_exists($loop, $children) && count($children[$loop]) > 0){
+                        array_push($depth, $loop);
+                        $loop = array_shift($children[$loop]);
+                        $count++;
+                        yield $loop;
+                    } else {
+                        $loop = array_pop($depth);
+                        continue;
+                    }
+                }
+            }
+        }
+
+        /*
          |  DATA :: COUNT COMMENTS
          |  @since  0.1.0
          |
