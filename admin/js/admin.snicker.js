@@ -1,12 +1,12 @@
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/js/admin.snicker.js
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
 ;(function(root){
     "use strict";

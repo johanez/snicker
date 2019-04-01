@@ -1,12 +1,12 @@
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.js
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
 ;(function(root){
     "use strict";
@@ -72,13 +72,14 @@
          */
         if(form){
             form.addEventListener("submit", function(event){
+                event.preventDefault();
                 if(typeof(FormData) !== "function" || !SNICKER_AJAX){
                     return true;
                 }
                 var data = new FormData(this), self = this;
 
                 // Check Button
-                var btn = this.querySelector("[name='type']");
+                var btn = this.querySelector("[name='snicker']");
                 if(btn.disabled){
                     return true;
                 }
@@ -87,7 +88,7 @@
                 // AJAX Call
                 btn.disabled = true;
                 btn.classList.add("loading");
-                data.append("type", btn.value);
+                data.append("snicker", btn.value);
                 ajax(SNICKER_PATH, "POST", data, function(json){
                     var data = JSON.parse(json);
 

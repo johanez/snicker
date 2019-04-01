@@ -1,13 +1,13 @@
 <?php
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index.php
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
@@ -16,6 +16,7 @@
     // Pending Counter
     $count = count($Snicker->getIndex("pending"));
     $count = ($count > 99)? "99+": $count;
+    $spam  = count($Snicker->getIndex("spam"));
 
     // Tab Strings
     $strings = array(
@@ -52,6 +53,9 @@
                     echo $strings[$tab];
                     if($tab === "pending" && !empty($count)){
                         ?> <span class="badge badge-primary"><?php echo $count; ?></span><?php
+                    }
+                    if($tab === "spam" && !empty($spam)){
+                        ?> <span class="badge badge-danger"><?php echo $spam; ?></span><?php
                     }
                 ?>
             </a>

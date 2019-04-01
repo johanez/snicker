@@ -1,27 +1,19 @@
 Snicker
 =======
 
-Snicker is the first and native FlatFile comment system for the Content Management System 
+Snicker is the first native FlatFile comment system for the Content Management System 
 [Bludit](https://github.com/bludit/bludit). It allows to write and publish comments using basic 
 HTML Syntax or Markdown. The Plugin also offers an extensive environment, many settings and 
 possibilities and is also completely compliant with the GDPR!
 
-Attention
----------
-This is the **unstable**, possibly **dangerous** and **incomplete** Repository Branch of the Snicker 
-Comment Plugin. You should NEVER use this version on productive or working websites. This build is 
-ONLY for development and testing purposes!
-
-You've been warned!
-
 Features
 --------
--   Depth-Based Commenting with many settings
--   Configurable Strings and Frontend View
--   AJAX Support to prevent Page-Reloads
--   User-Management for Not-Logged-In Users
+-   Level-Based, AJAX-enabled Commenting for Guests and Users
+-   Many Configurations and adaptable Strings and Themes
+-   Guest Management for Not-Logged-In Comment Authors
 -   Moderatable Comments (Pending, Approved, Rejected, Spam)
 -   Extensive Backend with many possibilities
+-   Compliant with the European GDPR
 
 Requirements
 ------------

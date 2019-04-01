@@ -1,13 +1,13 @@
 <?php
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./plugin.php
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
@@ -123,7 +123,7 @@
                 "frontend_order"            => "date_desc",
                 "frontend_form"             => "top",
                 "frontend_per_page"         => 15,
-                "frontend_ajax"             => false,
+                "frontend_ajax"             => true,
                 "frontend_avatar"           => "gravatar",
                 "frontend_avatar_users"     => true,   
                 "frontend_gravatar"         => "mp",   
@@ -306,7 +306,7 @@
             }
 
             $key = null;
-            if(in_array($data["snicker"], array("add", "edit", "delete", "config", "user", "moderate"))){
+            if(in_array($data["snicker"], array("add", "edit", "delete", "config", "users", "backup", "moderate"))){
                 $key = "alert";
             }
 
@@ -364,6 +364,8 @@
                     return $this->user($data);
                 case "configure":
                     return $this->config($data);
+                case "backup":
+                    return $this->backup();
             }
             return $this->response(array(
                 "error" => sn__("The passed action is unknown or invalid!")
@@ -539,6 +541,25 @@
             ), "alert");
         }
 
+        /*
+         |  API :: CREATE BACKUP
+         |  @since  0.1.0
+         */
+        private function backup(){
+            $filename = "snicker-backup-" . time() . ".zip";
+
+            // Create Backup
+            $zip = new PIT\Zip();
+            $zip->addFolder($this->workspace(), "/", true, true);
+            $zip->save(PATH_TMP . $filename);
+
+            // Return
+            return $this->response(array(
+                "success"   => sn__("The backup has been created successfully!"),
+                "referer"   => DOMAIN_ADMIN . "uninstall-plugin/SnickerPlugin"
+            ), "alert");
+        }
+
 
 ##
 ##  BACKEND HOOKs
@@ -571,7 +592,7 @@
          |  @since  0.1.0
          */
         public function adminHead(){
-            global $page, $url;
+            global $page, $security, $url;
 
             $js = SNICKER_DOMAIN . "admin/js/";
             $css = SNICKER_DOMAIN . "admin/css/";
@@ -613,6 +634,28 @@
                     <script type="text/javascript" src="<?php echo $js; ?>admin.snicker.js"></script>
                     <link type="text/css" rel="stylesheet" href="<?php echo $css; ?>admin.snicker.css" />
                 <?php
+            } else if($slug[0] === "plugins"){
+                $link = DOMAIN_ADMIN . "snicker?action=snicker&snicker=backup&tokenCSRF=" . $security->getTokenCSRF();
+                ?>
+                    <script type="text/javascript">
+                        document.addEventListener("DOMContentLoaded", function(){
+                            var link = document.querySelector("tr#SnickerPlugin td a");
+                            if(link){
+                                link.addEventListener("click", function(event){
+                                    event.preventDefault();
+                                    jQuery("#dialog-deactivate-snicker").modal();
+                                });
+                                jQuery("#dialog-deactivate-snicker button[data-snicker='backup']").click(function(){
+                                    console.log("owo");
+                                    window.location.replace("<?php echo $link; ?>&referer=" + link.href);
+                                });
+                                jQuery("#dialog-deactivate-snicker button[data-snicker='deactivate']").click(function(){
+                                    window.location.replace(link.href);
+                                });
+                            }
+                        })
+                    </script>
+                <?php
             }
             $content = ob_get_contents();
             ob_end_clean();
@@ -635,10 +678,43 @@
          |  @since  0.1.0
          */
         public function adminBodyEnd(){
-            global $SnickerPlugin;
+            global $url, $SnickerPlugin;
             if(!$this->backend || !$this->backendView){
+                $slug = explode("/", str_replace(HTML_PATH_ADMIN_ROOT, "", $url->uri()));
+                if($slug[0] === "plugins"){
+                    ?>
+                        <div id="dialog-deactivate-snicker" class="modal fade" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title"><?php sn_e("Snicker Plugin Deactivation"); ?></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>
+                                            <?php sn_e("You are about to deactivate the <b>Snicker</b> Plugin, which will delete all written comments!"); ?>
+                                            <?php sn_e("Do you want to Backup your comments before?"); ?>
+                                        </p>
+                                        <p>
+                                            <?php sn_e("The Backup will be stored in %s!", array("<code>./bl-content/tmp/</code>")); ?>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-snicker="backup"><?php sn_e("Yes, create a Backup"); ?></button>
+                                        <button type="button" class="btn btn-danger" data-snicker="deactivate"><?php sn_e("No, just Deactivate"); ?></button>
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php sn_e("Cancel"); ?></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+                }
                 return false;
             }
+            
+            // Fetch Content
             $content = ob_get_contents();
             ob_end_clean();
 

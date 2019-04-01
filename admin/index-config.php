@@ -1,13 +1,13 @@
 <?php
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index-config.php
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
@@ -295,10 +295,10 @@
                             <label for="sn-gravatar" class="col-sm-3 col-form-label"><?php sn_e("Comment Gravatar"); ?></label>
                             <div class="col-sm-9">
                                 <select id="sn-gravatar" name="frontend_gravatar" class="form-control custom-select">
-                                    <option value="mp" <?php sn_selected("frontend_gravatar", "mp"); ?>>Show Mystery Person</option>
-                                    <option value="identicon" <?php sn_selected("frontend_gravatar", "identicon"); ?>>Show Identicon</option>
-                                    <option value="monsterid" <?php sn_selected("frontend_gravatar", "monsterid"); ?>>Show Monster ID</option>
-                                    <option value="wavatar" <?php sn_selected("frontend_gravatar", "wavatar"); ?>>Show WAvatar</option>
+                                    <option value="mp" <?php sn_selected("frontend_gravatar", "mp"); ?>><?php sn_e("Show Mystery Person"); ?></option>
+                                    <option value="identicon" <?php sn_selected("frontend_gravatar", "identicon"); ?>><?php sn_e("Show"); ?> Identicon</option>
+                                    <option value="monsterid" <?php sn_selected("frontend_gravatar", "monsterid"); ?>><?php sn_e("Show"); ?> Monster ID</option>
+                                    <option value="wavatar" <?php sn_selected("frontend_gravatar", "wavatar"); ?>><?php sn_e("Show"); ?> WAvatar</option>
                                 </select>
                                 <small class="form-text text-muted"><?php sn_e("The default Gravatar image, if the user has no Gravatar!"); ?></small>
                             </div>

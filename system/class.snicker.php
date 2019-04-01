@@ -1,13 +1,13 @@
 <?php
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/class.snicker.php
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
     if(!defined("BLUDIT")){ die("Go directly to Jail. Do not pass Go. Do not collect 200 Cookies!"); }
 
@@ -689,6 +689,12 @@
                         "error"     => sn_config($error)
                     ), $key);
                 }
+                if($SnickerUsers->db[$user]["blocked"]){
+                    return sn_response(array(
+                        "referer"   => $referer . "#snicker-comments-form",
+                        "error"     => sn_config("string_error_7")
+                    ), $key);
+                }
                 $data["author"] = "guest::" . $user;
             } else {
                 return sn_response(array(
@@ -748,10 +754,11 @@
 
             // Clear Temp and Return
             Session::set("snicker-comment", null);
+            $comment = new Comment($uid, $data["page_uuid"]);
             return sn_response(array(
                 "referer"   => $referer . "#comment-" . $uid,
                 "success"   => sn_config("string_success_" . ((int) $data["subscribe"] + 1)),
-                "comment"   => $this->renderTheme("comment", array(new Comment($uid, $data["page_uuid"]), $uid))
+                "comment"   => $this->renderTheme("comment", array($comment, $uid, $comment->depth()))
             ), $key);
         }
 

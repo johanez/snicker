@@ -1,13 +1,13 @@
 @charset "UTF-8";
 /*
- |  Snicker     A small Comment System 4 Bludit
+ |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/css/admin.snicker.css
  |  @author     SamBrishes <sam@pytes.net>
  |  @version    0.1.0 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
- |  @copyright  Copyright © 2018 - 2019 SamBrishes, pytesNET <info@pytes.net>
+ |  @copyright  Copyright © 2019 SamBrishes, pytesNET <info@pytes.net>
  */
 
 /* @start GENERAL */
@@ -35,6 +35,16 @@
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
     background-color: #343a40;
 }
+.nav.nav-pills .nav-link .badge{
+    margin-top: 3px;
+    text-shadow: none;
+    vertical-align: top;
+}
+.nav.nav-pills .nav-link.active .badge{
+    text-shadow: none;
+    background-color: #fff;
+}
+
 .nav.nav-pills .nav-link.nav-pending{
     border-top-right-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
@@ -43,15 +53,8 @@
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #007bff;
 }
-.nav.nav-pills .nav-link.nav-pending .badge{
-    margin-top: 2px;
-    text-shadow: none;
-    vertical-align: top;
-}
 .nav.nav-pills .nav-link.nav-pending.active .badge{
     color: #007bff;
-    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #fff;
 }
 .nav.nav-pills .nav-link.nav-approved{
     border-radius: 0 !important;
@@ -74,6 +77,9 @@
 .nav.nav-pills .nav-link.nav-spam.active{
     text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.25);
     background-color: #DC3545;
+}
+.nav.nav-pills .nav-link.nav-spam.active .badge{
+    color: #DC3545;
 }
 .nav.nav-pills .nav-link.nav-config{
     font-weight: 400;
