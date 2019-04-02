@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index-comments.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0 [0.1.0] - Alpha
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -14,7 +14,10 @@
     global $pages, $security, $Snicker, $SnickerIndex, $SnickerPlugin, $SnickerUsers;
 
     // Get Data
-    $limits = $SnickerPlugin->getValue("frontend_per_page");
+    $limit = $SnickerPlugin->getValue("frontend_per_page");
+    if($limit === 0){
+        $limit = 15;
+    }
     $current = isset($_GET["tab"])? $_GET["tab"]: "pending";
 
     // Get View
@@ -36,7 +39,7 @@
 
         // Get Comments
         if($view === "index"){
-            $comments = $SnickerIndex->getList($status, $page, $limits);
+            $comments = $SnickerIndex->getList($status, $page, $limit);
             $total = $SnickerIndex->count($status);
         } else if($view === "search"){
             $comments = $SnickerIndex->searchComments(isset($_GET["search"])? $_GET["search"]: "");
@@ -72,7 +75,7 @@
                             </form>
 
                             <div class="col-sm-6 text-right">
-                                <?php if($total > $limits){ ?>
+                                <?php if($total > $limit){ ?>
                                     <div class="btn-group btn-group-pagination">
                                         <?php if($page <= 1){ ?>
                                             <span class="btn btn-secondary disabled">&laquo;</span>
@@ -81,9 +84,9 @@
                                             <a href="<?php printf($link, 1); ?>" class="btn btn-secondary">&laquo;</a>
                                             <a href="<?php printf($link, $page-1); ?>" class="btn btn-secondary">&lsaquo;</a>
                                         <?php } ?>
-                                        <?php if(($page * $limits) < $total){ ?>
+                                        <?php if(($page * $limit) < $total){ ?>
                                             <a href="<?php printf($link, $page+1); ?>" class="btn btn-secondary">&rsaquo;</a>
-                                            <a href="<?php printf($link, ceil($total / $limits)); ?>" class="btn btn-secondary">&raquo;</a>
+                                            <a href="<?php printf($link, ceil($total / $limit)); ?>" class="btn btn-secondary">&raquo;</a>
                                         <?php } else { ?>
                                             <span class="btn btn-secondary disabled">&rsaquo;</span>
                                             <span class="btn btn-secondary disabled">&raquo;</span>

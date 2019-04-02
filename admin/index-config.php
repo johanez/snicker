@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index-config.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0 [0.1.0] - Alpha
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -196,7 +196,12 @@
                             <div class="col-sm-9">
                                 <select id="sn-captcha" name="frontend_captcha" class="form-control custom-select">
                                     <option value="disabled" <?php sn_selected("frontend_captcha", "disabled"); ?>><?php sn_e("Disable Captcha"); ?></option>
-                                    <option value="gregwar" <?php sn_selected("frontend_captcha", "gregwar"); ?>><?php sn_e("Use local Captcha (by Gregway)"); ?></option>
+                                    <option value="purecaptcha" <?php sn_selected("frontend_captcha", "purecaptcha"); ?>><?php sn_e("Use OWASP's PureCaptcha"); ?></option>
+                                    <?php if(function_exists("imagettfbbox")){ ?>
+                                        <option value="gregwar" <?php sn_selected("frontend_captcha", "gregwar"); ?>><?php sn_e("Use Gregway's Captcha"); ?></option>
+                                    <?php } else { ?>
+                                        <option disabled="disabled"><?php sn_e("Use Gregway's Captcha (GD library is missing!)"); ?></option>
+                                    <?php } ?>
                                     <option value="recaptcha" <?php sn_selected("frontend_captcha", "recaptcha"); ?> disabled="disabled"><?php sn_e("Use Googles reCaptcha (Not available yet)"); ?></option>
                                 </select>
                             </div>

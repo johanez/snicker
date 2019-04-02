@@ -2,7 +2,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.js
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -65,7 +65,8 @@
 
         // Main Elements
         var form = d.querySelector("form.comment-form"),
-            list = d.querySelector(".snicker-comments-list");
+            list = d.querySelector(".snicker-comments-list"),
+            captcha = d.querySelector("a[data-captcha='reload']");
 
         /*
          |  HANDLE COMMENT FORM
@@ -93,7 +94,6 @@
                     var data = JSON.parse(json);
 
                     // Add Comment
-                    console.log(data);
                     if(list && data.status == "success" && "comment" in data){
                         if(list.querySelector(".comment")){
                             list.querySelector(".comment").insertAdjacentHTML("beforebegin", data.comment);
@@ -118,6 +118,11 @@
                         showAlert("success", data.success, form.querySelector(".comment-article"));
                     } else if(data.status === "error"){
                         showAlert("error", data.error, form.querySelector(".comment-article"));
+
+                        if(captcha && "captcha" in data){
+                            d.querySelector("input[name='comment[captcha]']").value = "";
+                            captcha.querySelector("img").src = data.captcha;
+                        }
                     }
 
                     // Re-Enable Button
@@ -125,6 +130,30 @@
                     btn.classList.remove("loading");
                 });
             });
+        }
+
+        /*
+         |  HANDLE CAPTCHA RELOAD
+         */
+        if(captcha){
+            captcha.addEventListener("click", function(event){
+                if(!SNICKER_AJAX){
+                    return false;
+                }
+                event.preventDefault();
+                captcha.classList.add("reload");
+
+                var data = "action=snicker&snicker=captcha&tokenCSRF=";
+                var token = d.querySelector("input[name='tokenCSRF']").value;
+                ajax(SNICKER_PATH, "POST", data + token, function(json){
+                    var data = JSON.parse(json);
+                    if(data.status !== "success"){
+                        window.location.replace(captcha.getAttribute("href"));
+                    }
+                    captcha.querySelector("img").src = data.captcha;
+                    captcha.classList.remove("reload");
+                });
+            })
         }
 
         /*

@@ -2,7 +2,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/js/admin.snicker.js
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -95,6 +95,31 @@
                 }
                 menuLink(link);
             };
+        }
+
+        /*
+         |  MAIN MENU LINK HANDLER
+         |  @since  0.1.1
+         */
+        var avatar = document.getElementById("sn-avatar"),
+            gravatar = document.getElementById("sn-gravatar");
+        if(avatar && gravatar){
+            var GravatarOption = function(){
+                console.log(avatar.value)
+
+                if(avatar.value == "gravatar"){
+                    gravatar.disabled = false;
+                    document.querySelector("label[for='sn-gravatar']").classList.remove("text-muted");
+                } else {
+                    gravatar.disabled = true;
+                    document.querySelector("label[for='sn-gravatar']").classList.add("text-muted");
+                }
+            };
+
+            avatar.addEventListener("change", function(){
+                GravatarOption();
+            });
+            GravatarOption();
         }
     });
 })(window);

@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.css
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -373,6 +373,68 @@ form.comment-form .comment-captcha input:hover{
 }
 form.comment-form .comment-captcha input:focus{
     background-color: #e0e4e8;
+}
+form.comment-form .comment-captcha a{
+    width: auto;
+    height: 40px;
+    display: inline-block;
+    position: relative;
+}
+form.comment-form .comment-captcha a:before{
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    z-index: 20;
+    display: inline-block;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.0);
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    transition: background 142ms linear;
+    -moz-transition: background 142ms linear;
+    -webkit-transition: background 142ms linear;
+}
+form.comment-form .comment-captcha a.reload:before{
+    background-color: rgba(0, 0, 0, 0.5);
+}
+form.comment-form .comment-captcha a:after{
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    padding: 2px;
+    content: "";
+    z-index: 25;
+    opacity: 0;
+    display: inline-block;
+    position: absolute;
+    background-size: 20px;
+    background-color: #000;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC\
+    9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDEyIDE2Ij48cGF0aCBmaWxsPSIjZmZmIiBkPSJNM\
+    TAuMjQgNy40YTQuMTUgNC4xNSAwIDAgMS0xLjIgMy42IDQuMzQ2IDQuMzQ2IDAgMCAxLTUuNDEuNTRMNC44IDEwLjQuNSA5\
+    LjhsLjYgNC4yIDEuMzEtMS4yNmMyLjM2IDEuNzQgNS43IDEuNTcgNy44NC0uNTRhNS44NzYgNS44NzYgMCAwIDAgMS43NC0\
+    0LjQ2bC0xLjc1LS4zNHpNMi45NiA1YTQuMzQ2IDQuMzQ2IDAgMCAxIDUuNDEtLjU0TDcuMiA1LjZsNC4zLjYtLjYtNC4yLT\
+    EuMzEgMS4yNmMtMi4zNi0xLjc0LTUuNy0xLjU3LTcuODUuNTRDLjUgNS4wMy0uMDYgNi42NS4wMSA4LjI2bDEuNzUuMzVBN\
+    C4xNyA0LjE3IDAgMCAxIDIuOTYgNXoiLz48L3N2Zz4=");
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    transition: opacity 142ms linear;
+    -moz-transition: opacity 142ms linear;
+    -webkit-transition: opacity 142ms linear;
+}
+form.comment-form .comment-captcha a.reload:after{
+    opacity: 1;
+    animation: spin 2s linear 0ms infinite;
+    -moz-animation: spin 2s linear 0ms infinite;
+    -webkit-animation: spin 2s linear 0ms infinite;
 }
 form.comment-form .comment-captcha img{
     max-width: none;

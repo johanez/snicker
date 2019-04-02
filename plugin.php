@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./plugin.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0 [0.1.0] - Alpha
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -96,6 +96,7 @@
         /*
          |  PLUGIN :: INIT
          |  @since  0.1.0
+         |  @update 0.1.1
          */
         public function init(){
             global $url;
@@ -116,7 +117,7 @@
                 "comment_vote_storage"      => "session",
                 "comment_enable_like"       => true,
                 "comment_enable_dislike"    => true,
-                "frontend_captcha"          => "gregwar",
+                "frontend_captcha"          => function_exists("imagettfbbox")? "gregwar": "purecaptcha",
                 "frontend_terms"            => "default",
                 "frontend_filter"           => "pageEnd",
                 "frontend_template"         => "default",
@@ -155,6 +156,7 @@
         /*
          |  PLUGIN :: OVERWRITE INSTALLED
          |  @since  0.1.0
+         |  @update 0.1.1
          */
         public function installed(){
             global $Snicker,            // Main Comment Handler
@@ -167,7 +169,7 @@
                     define("SNICKER", true);
                     define("SNICKER_PATH", PATH_PLUGINS . basename(__DIR__) . DS);
                     define("SNICKER_DOMAIN", DOMAIN_PLUGINS . basename(__DIR__) . "/");
-                    define("SNICKER_VERSION", "0.1.0");
+                    define("SNICKER_VERSION", "0.1.1");
 
                     // DataBases
                     define("DB_SNICKER_COMMENTS", $this->workspace() . "pages" . DS);
@@ -268,6 +270,7 @@
         /*
          |  API :: HANDLE REQUESTS
          |  @since  0.1.0
+         |  @update 0.1.1
          */
         public function request(){
             global $login, $security, $url, $Snicker;
@@ -366,6 +369,11 @@
                     return $this->config($data);
                 case "backup":
                     return $this->backup();
+                case "captcha":
+                    return $this->response(array(
+                        "success"   => sn__("The Captcha Image could be successfully created!"),
+                        "captcha"   => $Snicker->generateCaptcha(150, 40, true)
+                    ));
             }
             return $this->response(array(
                 "error" => sn__("The passed action is unknown or invalid!")
@@ -437,6 +445,7 @@
         /*
          |  API :: HANDLE CONFIGURATION
          |  @since  0.1.0
+         |  @update 0.1.1
          */
         private function config($data){
             global $pages, $Snicker;
@@ -447,7 +456,7 @@
             $selects = array(
                 "comment_title"         => array("optional", "required", "disabled"),
                 "comment_vote_storage"  => array("cookie", "session", "database"),
-                "frontend_captcha"      => array("disabled", "gregwar", "recaptcha"),
+                "frontend_captcha"      => array("disabled", "purecaptcha", "gregwar", "recaptcha"),
                 "frontend_avatar"       => array("gravatar", "identicon", "static"),
                 "frontend_gravatar"     => array("mp", "identicon", "monsterid", "wavatar"),
                 "frontend_filter"       => array("disabled", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),

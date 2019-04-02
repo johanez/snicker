@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/class.snicker.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0 [0.1.0] - Alpha
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -115,16 +115,29 @@
         /*
          |  SECURITY :: GENERATE CAPTCHA
          |  @since  0.1.0
+         |  @update 0.1.1
          |
          |  @param  string  The user input phrase.
          |
          |  @return bool    TRUE if the phrase is valid, FALSE if not.
          */
-        public function generateCaptcha($width = 150, $height = 40){
-            $captcha = new Gregwar\Captcha\CaptchaBuilder();
-            $captcha->build($width, $height);
-            $_SESSION["captcha"] = $captcha->getPhrase();
-            return '<img src="'.$captcha->inline().'" width="'.$width.'px"  height="'.$height.'px" />';
+        public function generateCaptcha($width = 150, $height = 40, $src = false){
+            if(sn_config("frontend_captcha") === "gregwar"){
+                $captcha = new Gregwar\Captcha\CaptchaBuilder();
+                $captcha->build($width, $height);
+                $_SESSION["captcha"] = $captcha->getPhrase();
+                if($src){
+                    return $captcha->inline();
+                }
+                return '<img src="'.$captcha->inline().'" width="'.$width.'px"  height="'.$height.'px" />';
+            } else if(sn_config("frontend_captcha") === "purecaptcha"){
+                $captcha = new OWASP\PureCaptcha();
+                $_SESSION["captcha"] = $captcha->text;
+                if($src){
+                    return "data:image/bmp;base64," . $captcha->show(false, 2.8);
+                }
+                return '<img src="data:image/bmp;base64,'.$captcha->show(false, 2.8).'" width="auto"  height="'.$height.'px" />';
+            }
         }
 
         /*
@@ -321,6 +334,7 @@
         /*
          |  THEME :: RENDER COMMENTS
          |  @since  0.1.0
+         |  @update 0.1.1
          |
          |  @param  string  The unqiue Page UUID, or NULL to use the current comments object,
          |                  based on the current frontend view.
@@ -342,11 +356,18 @@
 
             // Prepare Comment Meta
             $limit = sn_config("frontend_per_page");        // Comments per Page
-            $count = $comments->count();                    // Total Number of Comments
-            $total = ceil($count / $limit);                 // Total Number of C-Pages
-            $cpage = 1;                                     // Current Comment Page
-            if(isset($_GET["cpage"]) && $_GET["cpage"] > 1){
-                $cpage = ((int) $_GET["cpage"] < $max)? $_GET["cpage"]: $max;
+            if($limit > 0){
+                $count = $comments->count();                    // Total Number of Comments
+                $total = ceil($count / $limit);                 // Total Number of C-Pages
+                $cpage = 1;                                     // Current Comment Page
+                if(isset($_GET["cpage"]) && $_GET["cpage"] > 1){
+                    $cpage = ((int) $_GET["cpage"] < $max)? $_GET["cpage"]: $max;
+                }
+            } else {
+                $limit = $comments->count();
+                $count = $comments->count();
+                $total = 1;
+                $cpage = 1;
             }
 
             // Render Comments
@@ -606,6 +627,7 @@
         /*
          |  COMMENT :: WRITE A NEW ONE
          |  @since  0.1.0
+         |  @update 0.1.1
          |
          |  @param  array   The comment data as ARRAY.
          |
@@ -634,17 +656,20 @@
             $comments = $this->getByPage($data["page_uuid"]);
 
             // Check Captcha
-            if(sn_config("frontend_captcha") === "gregwar"){
+            $captcha = ($login->isLogged())? "disabled": sn_config("frontend_captcha");
+            if($captcha !== "disabled"){
                 if(!(isset($data["captcha"]) && $this->validateCaptcha($data["captcha"]))){
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",
-                        "error"     => sn__("The answer to the Captcha hasn't been passed or is wrong!")
+                        "error"     => sn__("The answer to the Captcha hasn't been passed or is wrong!"),
+                        "captcha"   => $this->generateCaptcha(150, 40, true)
                     ), $key);
                 }
             }
 
             // Check Terms
-            if(sn_config("frontend_terms") !== "disabled"){
+            $terms = ($login->isLogged())? "disabled": sn_config("frontend_terms");
+            if($terms !== "disabled"){
                 if(!isset($data["terms"]) || $data["terms"] !== "1"){
                     return sn_response(array(
                         "referer"   => $referer . "#snicker-comments-form",

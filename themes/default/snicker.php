@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.0 [0.1.0] - Alpha
+ |  @version    0.1.1 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -19,14 +19,25 @@
         /*
          |  RENDER :: COMMENT FORM
          |  @since  0.1.0
+         |  @update 0.1.1
          */
         public function form($username = "", $email = "", $title = "", $message = ""){
-            global $comments, $page, $security, $Snicker;
+            global $comments, $login, $page, $security, $Snicker;
 
+            // User Logged In
+            if(!is_a($login, "Login")){
+                $login = new Login;
+            }
+            $user = $login->isLogged();
+
+            // Get Data
             if(empty($security->getTokenCSRF())){
                 $security->generateTokenCSRF();
             }
+            $captcha = ($user)? "disabled": sn_config("frontend_captcha");
+            $terms = ($user)? "disabled": sn_config("frontend_terms");
 
+            // Is Reply
             $reply = isset($_GET["snicker"]) && $_GET["snicker"] == "reply";
             if($reply && isset($_GET["uid"]) && $comments->exists($_GET["uid"])){
                 $reply = new Comment($_GET["uid"], $page->uuid());
@@ -73,10 +84,13 @@
                         <p>
                             <textarea id="comment-text" name="comment[comment]" placeholder="<?php sn_e("Your Comment..."); ?>"><?php echo $message; ?></textarea>
                         </p>
-                        <?php if(sn_config("frontend_captcha") === "gregwar"){ ?>
+                        <?php if($captcha !== "disabled"){ ?>
                             <div class="comment-captcha">
                                 <input type="text" name="comment[captcha]" value="" placeholder="<?php sn_e("Answer"); ?>" />
-                                <?php echo $Snicker->generateCaptcha(); ?>
+
+                                <a href="<?php echo $page->permalink(); ?>#snicker-comment-form" data-captcha="reload">
+                                    <?php echo $Snicker->generateCaptcha();  ?>
+                                </a>
                             </div>
                         <?php } ?>
                         
@@ -96,14 +110,14 @@
                     <div class="comment-footer">
                         <div class="table">
                             <div class="table-cell align-left">
-                                <?php if(sn_config("frontend_terms") === "default"){ ?>
+                                <?php if($terms === "default"){ ?>
                                     <div class="terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                         <label for="comment-terms">
                                             <?php echo sn_config("string_terms_of_use"); ?>
                                         </label>
                                     </div>
-                                <?php } else if(sn_config("frontend_terms") !== "disabled"){ ?>
+                                <?php } else if($terms !== "disabled"){ ?>
                                     <div class="terms-of-use">
                                         <input type="checkbox" id="comment-terms" name="comment[terms]" value="1" />
                                         <label for="comment-terms">
