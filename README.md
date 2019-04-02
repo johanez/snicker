@@ -23,6 +23,7 @@ Requirements
 Dependencies
 ------------
 -   Snicker use the awesome [Captcha PHP Library](https://github.com/Gregwar/Captcha) made by Grégoire Passault
+-   Snicker uses also the [PureCaptcha PHP Library](https://github.com/OWASP/PureCaptcha) as fallback by Abbas Naderi
 -   The Avatars are served per default by [Gravatar](https://de.gravatar.com/), made by Automattic / WordPress
 -   **But** you can also directly use [Identicons](http://identicon.net) instead...
 -   ... where we use the [Identicon PHP Library](https://github.com/yzalis/Identicon) from Benjamin Laugueux
