@@ -122,7 +122,7 @@
          |  @return bool    TRUE if the phrase is valid, FALSE if not.
          */
         public function generateCaptcha($width = 150, $height = 40, $src = false){
-            if(sn_config("frontend_captcha") === "gregwar"){
+            if(sn_config("frontend_captcha") === "gregwar" && function_exists("imagettfbbox")){
                 $captcha = new Gregwar\Captcha\CaptchaBuilder();
                 $captcha->build($width, $height);
                 $_SESSION["captcha"] = $captcha->getPhrase();
