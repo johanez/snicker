@@ -16,7 +16,7 @@
          |  AVAILABLE THEMES
          */
         public $themes = array();
-        
+
         /*
          |  CONSTRUCTOR
          |  @since  0.1.0
@@ -115,34 +115,50 @@
         /*
          |  SECURITY :: GENERATE CAPTCHA
          |  @since  0.1.0
-         |  @update 0.1.1
+         |  @update 0.2.0
          |
          |  @param  string  The user input phrase.
          |
          |  @return bool    TRUE if the phrase is valid, FALSE if not.
          */
         public function generateCaptcha($width = 150, $height = 40, $src = false){
-            if(sn_config("frontend_captcha") === "gregwar" && function_exists("imagettfbbox")){
-                $captcha = new Gregwar\Captcha\CaptchaBuilder();
-                $captcha->build($width, $height);
-                $_SESSION["captcha"] = $captcha->getPhrase();
-                if($src){
-                    return $captcha->inline();
-                }
-                return '<img src="'.$captcha->inline().'" width="'.$width.'px"  height="'.$height.'px" />';
-            } else if(sn_config("frontend_captcha") === "purecaptcha"){
-                $captcha = new OWASP\PureCaptcha();
-                $_SESSION["captcha"] = $captcha->text;
-                if($src){
-                    return "data:image/bmp;base64," . $captcha->show(false, 2.8);
-                }
-                return '<img src="data:image/bmp;base64,'.$captcha->show(false, 2.8).'" width="auto"  height="'.$height.'px" />';
+            $captcha = sn_config("frontend_captcha");
+            if($captcha === "gregwar" && !function_exists("imagettfbbox")){
+                $captcha = "purecaptcha";
             }
+
+            switch($captcha){
+                case "gregwar":
+                    $captcha = new Gregwar\Captcha\CaptchaBuilder();
+                    $captcha->build($width, $height);
+                    $_SESSION["captcha"] = $captcha->getPhrase();
+                    if($src){
+                        return $captcha->inline();
+                    }
+                    return '<img src="'.$captcha->inline().'" width="'.$width.'px"  height="'.$height.'px" />';
+
+                case "purecaptcha":
+                    $captcha = new OWASP\PureCaptcha();
+                    $_SESSION["captcha"] = $captcha->text;
+                    if($src){
+                        return "data:image/bmp;base64," . $captcha->show(false, 2.8);
+                    }
+                    return '<img src="data:image/bmp;base64,'.$captcha->show(false, 2.8).'" width="auto"  height="'.$height.'px" />';
+
+                case "recaptchav2":     //@fallthrough
+                case "recaptchav3":
+                    if($src){
+                        return false;
+                    }
+                    return '<div class="g-recaptcha" data-sitekey="'.sn_config("frontend_recaptcha_public").'"></div>';
+            }
+            return false;
         }
 
         /*
          |  SECURITY :: VALIDATE CAPTCHA
          |  @since  0.1.0
+         |  @update 0.2.0
          |
          |  @param  int     The desired captcha width.
          |  @param  int     The desired captcha height.
@@ -153,8 +169,20 @@
             if(!isset($_SESSION["captcha"])){
                 return false;
             }
-            $captcha = new Gregwar\Captcha\CaptchaBuilder($_SESSION["captcha"]);
-            return $captcha->testPhrase($phrase);
+
+            $captcha = sn_config("frontend_captcha");
+            switch($captcha){
+                case "gregwar":         //@fallthrough
+                case "purecaptcha":
+                    $captcha = new Gregwar\Captcha\CaptchaBuilder($_SESSION["captcha"]);
+                    return $captcha->testPhrase($phrase);
+
+                case "recaptchav2":     //@fallthrough
+                case "recaptchav3":
+                    $repcatcha = new ReCaptcha\ReCaptcha(sn_config("frontend_recaptcha_private"));
+                    return $recaptcha->isSuccess();
+            }
+            return false;
         }
 
 
@@ -404,6 +432,7 @@
         /*
          |  THEME :: RENDER SECTION
          |  @since  0.1.0
+         |  @update 0.1.2
          |
          |  @param  bool    TRUE to print the output directly, FALSE to return it as STRING.
          |
@@ -413,7 +442,7 @@
             global $comments, $page, $url;
 
             // Validate Call
-            if($url->whereAmI() !== "page"){
+            if($url->whereAmI() !== "page" || empty($page->uuid)){
                 return false;
             }
             if(!sn_config("comment_on_public") && $page->published()){
@@ -553,7 +582,7 @@
 ##
 ##  COMMENT HANDLER
 ##
-     
+
         /*
          |  VALIDATE AND GET BLUDIT USER
          |  @since  0.1.0
@@ -602,13 +631,13 @@
             }
             return true;
         }
-        
+
         /*
          |  COMMENT :: CHECK IF USER HAS RATED
          |  @since  0.1.0
          |
          |  @param  string  The comment UID as string.
-         |  @param  multi   The desired rating type "like" or "dislike". 
+         |  @param  multi   The desired rating type "like" or "dislike".
          |                  Use `null` to check if user has rated in general.
          |
          |  @return bool    TRUE if the user has rated, FALSE if not.
@@ -927,7 +956,7 @@
                 ), $key);
             }
             $comments = new Comments($comment["page_uuid"]);
-            
+
             // Create Referer
             $referer = new Page($pages->getByUUID($comment["page_uuid"]));
             $referer = $referer->permalink() . "#comment-{$uid}";
@@ -946,7 +975,7 @@
                 ));
             }
             $rating = $comments->getCommentDB($uid)["rating"];
-            
+
             // Get Ratings
             if($SnickerVotes->hasVoted($uid, null)){
                 if($SnickerVotes->hasVoted($uid, $type)){

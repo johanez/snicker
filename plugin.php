@@ -118,6 +118,8 @@
                 "comment_enable_like"       => true,
                 "comment_enable_dislike"    => true,
                 "frontend_captcha"          => function_exists("imagettfbbox")? "gregwar": "purecaptcha",
+                "frontend_recaptcha_public" => "",
+                "frontend_recaptcha_private"=> "",
                 "frontend_terms"            => "default",
                 "frontend_filter"           => "pageEnd",
                 "frontend_template"         => "default",
@@ -126,8 +128,8 @@
                 "frontend_per_page"         => 15,
                 "frontend_ajax"             => true,
                 "frontend_avatar"           => "gravatar",
-                "frontend_avatar_users"     => true,   
-                "frontend_gravatar"         => "mp",   
+                "frontend_avatar_users"     => true,
+                "frontend_gravatar"         => "mp",
                 "subscription"              => false,
                 "subscription_from"         => "ticker@{$_SERVER["SERVER_NAME"]}",
                 "subscription_reply"        => "noreply@{$_SERVER["SERVER_NAME"]}",
@@ -163,7 +165,7 @@
                    $SnickerIndex,       // Main Comment Indexer
                    $SnickerUsers,       // Main Comment Users
                    $SnickerVotes;       // Main Comment Votes
-            
+
             if(file_exists($this->filenameDb)){
                 if(!defined("SNICKER")){
                     define("SNICKER", true);
@@ -244,7 +246,7 @@
                     $key = empty($key)? "snicker-alert": $key;
                     Alert::set($data["error"], ALERT_STATUS_FAIL, $key);
                 }
-                
+
                 if($data["referer"]){
                     Redirect::url($data["referer"]);
                 } else {
@@ -401,7 +403,7 @@
                 ), "alert");
             }
 
-            // Handle 
+            // Handle
             if($data["handle"] === "delete"){
                 $comments = $SnickerUsers->db[$data["uuid"]]["comments"];
                 foreach($comments AS $uid){
@@ -445,20 +447,21 @@
         /*
          |  API :: HANDLE CONFIGURATION
          |  @since  0.1.0
-         |  @update 0.1.1
+         |  @update 0.2.0
          */
         private function config($data){
             global $pages, $Snicker;
             $config = array();
 
             // Validations
+            $text = array("frontend_recaptcha_public", "frontend_recaptcha_private");
             $numbers = array("comment_limit", "comment_depth", "frontend_per_page");
             $selects = array(
                 "comment_title"         => array("optional", "required", "disabled"),
                 "comment_vote_storage"  => array("cookie", "session", "database"),
-                "frontend_captcha"      => array("disabled", "purecaptcha", "gregwar", "recaptcha"),
-                "frontend_avatar"       => array("gravatar", "identicon", "static"),
-                "frontend_gravatar"     => array("mp", "identicon", "monsterid", "wavatar"),
+                "frontend_captcha"      => array("disabled", "purecaptcha", "gregwar", "recaptchav2", "recaptchav3"),
+                "frontend_avatar"       => array("gravatar", "identicon", "static", "initials"),
+                "frontend_gravatar"     => array("mp", "identicon", "monsterid", "wavatar", "retro", "robohash", "blank"),
                 "frontend_filter"       => array("disabled", "pageBegin", "pageEnd", "siteBodyBegin", "siteBodyEnd"),
                 "frontend_order"        => array("date_desc", "date_asc"),
                 "frontend_form"         => array("top", "bottom")
@@ -529,7 +532,7 @@
                 }
 
                 // Sanitize Strings
-                if(strpos($field, "string_") === 0){
+                if(strpos($field, "string_") === 0 || in_array($field, $text)){
                     $config[$field] = Sanitize::html(strip_tags($data[$field]));
                     if(empty($config[$field])){
                         $config[$field] = $value;
@@ -722,7 +725,7 @@
                 }
                 return false;
             }
-            
+
             // Fetch Content
             $content = ob_get_contents();
             ob_end_clean();
@@ -775,9 +778,10 @@
         /*
          |  HOOK :: BEFORE FRONTEND LOAD
          |  @since  0.1.0
+         |  @update 0.1.2
          */
         public function beforeSiteLoad(){
-            global $comments, $page;
+            global $comments, $page, $url;
 
             // Start Session
             if(!Session::started()){
@@ -785,7 +789,7 @@
             }
 
             // Init Comments
-            if(is_a($page, "Page") && $page->published()){
+            if(is_a($page, "Page") && $page->published() && !empty($page->uuid())){
                 $comments = new Comments($page->uuid());
             } else {
                 $comments = false;
@@ -810,8 +814,14 @@
                         var SNICKER_PATH = "<?php echo HTML_PATH_ADMIN_ROOT ?>snicker/ajax/";
                     </script>
                     <script id="snicker-js" type="text/javascript" src="<?php echo $file; ?>"></script>
+                    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                 <?php
             }
+
+
+
+
+
             if(!empty($theme::SNICKER_CSS)){
                 $file = SNICKER_DOMAIN . "themes/" . sn_config("frontend_template") . "/" . $theme::SNICKER_CSS;
                 ?>
