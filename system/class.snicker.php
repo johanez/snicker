@@ -442,7 +442,7 @@
             global $comments, $page, $url;
 
             // Validate Call
-            if($url->whereAmI() !== "page" || empty($page->uuid)){
+            if($url->whereAmI() !== "page" || empty($page->uuid())){
                 return false;
             }
             if(!sn_config("comment_on_public") && $page->published()){
