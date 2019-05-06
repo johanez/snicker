@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./plugin.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -94,6 +94,18 @@
 ##
 
         /*
+         |  PLUGIN :: GET VALUE
+         |  @since  0.1.2
+         */
+        public function getValue($field, $html = true){
+            if(isset($this->db[$field])){
+                $data = strpos($field, "string_") === 0? sn__($this->db[$field]): $this->db[$field];
+                return ($html)? $data: Sanitize::htmlDecode($data);
+            }
+            return isset($this->dbFields[$field])? $this->dbFields[$field]: null;
+        }
+
+        /*
          |  PLUGIN :: INIT
          |  @since  0.1.0
          |  @update 0.1.1
@@ -171,7 +183,7 @@
                     define("SNICKER", true);
                     define("SNICKER_PATH", PATH_PLUGINS . basename(__DIR__) . DS);
                     define("SNICKER_DOMAIN", DOMAIN_PLUGINS . basename(__DIR__) . "/");
-                    define("SNICKER_VERSION", "0.1.1");
+                    define("SNICKER_VERSION", "0.1.2");
 
                     // DataBases
                     define("DB_SNICKER_COMMENTS", $this->workspace() . "pages" . DS);
@@ -513,7 +525,8 @@
 
                 // Sanitize Pages
                 if(in_array($field, $pageid)){
-                    if($data[$field] === "default" || $pages->exists($data[$field])){
+                    $default = in_array($data[$field], array("default", "disabled"));
+                    if($default || $pages->exists($data[$field])){
                         $config[$field] = $data[$field];
                     } else {
                         $config[$field] = $value;

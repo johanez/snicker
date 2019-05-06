@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.css
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -62,9 +62,9 @@
 /* @end ANIMATIONs */
 
 /* @start GENERAL */
-.snicker-comments, 
-.snicker-comments *, 
-.snicker-comments *::before, 
+.snicker-comments,
+.snicker-comments *,
+.snicker-comments *::before,
 .snicker-comments *::after{
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -78,7 +78,7 @@
     font-size: 14px;
     line-height: 1.5em;
 }
-.snicker-comments input, 
+.snicker-comments input,
 .snicker-comments textarea,
 .snicker-comments button{
     font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;

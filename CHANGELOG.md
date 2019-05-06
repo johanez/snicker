@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.1.2 - Alpha
+---------------------
+-   Bugfix: You can't comment, after you already comment (Error + Auto-Logout).
+-   Bugfix: Translated strings didn't returned correctly (English is returned instead),
+            Thansk to [#10](https://github.com/pytesNET/snicker/issues/10).
+-   Bugfix: The "Terms of Use" checkbox couldn't be disabled.
+            Thanks to [#16](https://github.com/pytesNET/snicker/issues/16).
+
 Version 0.1.1 - Alpha
 ---------------------
 -   Add: The Persian Translation, many thanks to [abdulhalim](https://github.com/abdulhalim).

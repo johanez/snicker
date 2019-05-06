@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -93,7 +93,7 @@
                                 </a>
                             </div>
                         <?php } ?>
-                        
+
                         <?php if(is_a($reply, "Comment")){ ?>
                             <div class="comment-reply">
                                 <a href="<?php echo $page->permalink(); ?>" class="reply-cancel"></a>

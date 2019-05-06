@@ -2,7 +2,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/themes/default/snicker.js
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -104,7 +104,7 @@
                         list.querySelector(".comment").scrollIntoView({ behavior: "smooth", block: "center" });
 
                         // Empty Form
-                        var field = self.querySelectorAll("input,textarea,select");
+                        var field = self.querySelectorAll("#comment-title,#comment-text");
                         for(var i = 0, l = field.length; i < l; i++){
                             if(field[i].tagName == "SELECT"){
                                 field[i].options[0].selected = true;

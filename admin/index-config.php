@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index-config.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -141,7 +141,7 @@
                                     <option value="session" <?php sn_selected("comment_vote_storage", "session"); ?>><?php sn_e("Session Storage"); ?></option>
                                     <option value="database" <?php sn_selected("comment_vote_storage", "database"); ?>><?php sn_e("Database Storage"); ?></option>
                                 </select>
-                                <a href="#" class="ml-2 align-top" data-container="body" data-toggle="popover" data-placement="left" 
+                                <a href="#" class="ml-2 align-top" data-container="body" data-toggle="popover" data-placement="left"
                                     data-trigger="focus" data-target="#help-content">(<?php sn_e("What?"); ?>)</a>
                                 <div id="help-content" class="hide d-none" style="width: 100%;">
                                     <p>
@@ -287,7 +287,7 @@
                                     <option value="identicon" <?php sn_selected("frontend_avatar", "identicon"); ?>><?php sn_e("Use Identicon"); ?></option>
                                     <option value="static" <?php sn_selected("frontend_avatar", "static"); ?>><?php sn_e("Use Mystery Men"); ?></option>
                                 </select>
-                                
+
                                 <div class="custom-control custom-checkbox mt-1">
                                     <input type="checkbox" id="sn-moderation-users" name="frontend_avatar_users" value="true"
                                         class="custom-control-input" <?php sn_checked("frontend_avatar_users"); ?> />

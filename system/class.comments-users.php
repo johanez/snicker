@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./system/class.comments-users.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -41,7 +41,7 @@
          |
          |  @param  string  The unique user ID as string (or the user eMail address).
          |  @param  bool    TRUE to just return the keys, FALSE to return it as Comment objects.
-         | 
+         |
          |  @return multi   The comment keys / objects as ARRAY, FALSE on failure.
          */
         public function getComments($uuid, $keys = true){
@@ -172,7 +172,7 @@
                         continue;
                     }
                     $list[$uuid] = $fields;
-                }                
+                }
             } else {
                 $list = $this->db;
             }
@@ -197,7 +197,7 @@
          |
          |  @param  string  The username as STRING.
          |  @param  string  The email address as STRING.
-         |  
+         |
          |  @return multi   The (new) UUID on success, FALSE on failure.
          */
         public function user($username, $email){

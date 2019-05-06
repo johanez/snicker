@@ -3,7 +3,7 @@
  |  Snicker     The first native FlatFile Comment Plugin 4 Bludit
  |  @file       ./admin/index-users.php
  |  @author     SamBrishes <sam@pytes.net>
- |  @version    0.1.1 [0.1.0] - Alpha
+ |  @version    0.1.2 [0.1.0] - Alpha
  |
  |  @website    https://github.com/pytesNET/snicker
  |  @license    X11 / MIT License
@@ -91,7 +91,7 @@
                     </tr>
                 </<?php echo $tag; ?>>
             <?php } ?>
-            
+
             <tbody class="shadow-sm-both">
                 <?php foreach($users AS $uuid => $user){ ?>
                     <tr>
@@ -103,7 +103,7 @@
                         </td>
                         <td class="text-center align-middle pt-2 pb-2 pl-1 pr-1">
                             <a href="<?php echo DOMAIN_ADMIN; ?>snicker?view=user&user=<?php echo $uuid; ?>">
-                                <?php echo count(isset($user["comments"])? $user["comments"]: array()); ?> 
+                                <?php echo count(isset($user["comments"])? $user["comments"]: array()); ?>
                                 <?php sn_e("Comments"); ?>
                             </a>
                         </td>
