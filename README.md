@@ -1,10 +1,22 @@
 Snicker
 =======
+[![Bludit](https://s.pytes.me/5ad229d2)](https://www.bludit-com)
+[![Version](https://s.pytes.me/ac4bff0e)](https://s.pytes.me/661790a7)
+[![Support Me](https://s.pytes.me/4a1717aa)](https://buymeacoffee.com/pytesNET)
+[![License](https://s.pytes.me/8257ac72)](LICENSE.md)
 
-Snicker is the first native FlatFile comment system for the Content Management System 
-[Bludit](https://github.com/bludit/bludit). It allows to write and publish comments using basic 
-HTML Syntax or Markdown. The Plugin also offers an extensive environment, many settings and 
+Snicker is the first native FlatFile comment system for the Content Management System
+[Bludit](https://github.com/bludit/bludit). It allows to write and publish comments using basic
+HTML Syntax or Markdown. The Plugin also offers an extensive environment, many settings and
 possibilities and is also completely compliant with the GDPR!
+
+Support
+-------
+<p align="center" atyle="text-align:center">
+You really like my <b>Snicker</b> plugin and want to support me and all of my projects?<br/>
+Then I would be extremely grateful for a coffee! (<b>Thanks to all Supporters</b>)<br/><br/>
+<a href="https://www.buymeacoffee.com/pytesNET"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" title="Buy Me A Coffee" /></a>
+</p>
 
 Features
 --------
@@ -27,8 +39,6 @@ Dependencies
 -   The Avatars are served per default by [Gravatar](https://de.gravatar.com/), made by Automattic / WordPress
 -   **But** you can also directly use [Identicons](http://identicon.net) instead...
 -   ... where we use the [Identicon PHP Library](https://github.com/yzalis/Identicon) from Benjamin Laugueux
--   ... and the [Identicon JavaScript Library](https://github.com/stewartlord/identicon.js) from Stewart Lord
--   ... which itself depends on the [PNG JavaScript Library](https://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/) by Robert Eisele
 
 Thanks for this awesome packages and projects!
 
