@@ -1,6 +1,6 @@
 Snicker
 =======
-[![Bludit](https://s.pytes.me/5ad229d2)](https://www.bludit-com)
+[![Bludit](https://s.pytes.me/5ad229d2)](https://www.bludit.com)
 [![Version](https://s.pytes.me/ac4bff0e)](https://s.pytes.me/661790a7)
 [![Support Me](https://s.pytes.me/4a1717aa)](https://buymeacoffee.com/pytesNET)
 [![License](https://s.pytes.me/8257ac72)](LICENSE.md)
