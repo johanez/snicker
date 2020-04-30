@@ -96,7 +96,7 @@
     "s18n-2e3d9327c371afb7489f9b9278198622": "AJAX-script",
     "s18n-c60cab6330745b41cbee05603eec6691": "AJAX-script insluiten",
     "s18n-69b11f64af515ef979fbf28c5e06f370": "AJAX niet gebruiken",
-    "s18n-9bbec7b57565f06d73522669d3b836dc": "The AJAX Script hands over the request (reactie, like, dislike) directly without reloading the page!",
+    "s18n-9bbec7b57565f06d73522669d3b836dc": "Het AJAX-script stuurt de gegevens (reactie, like, dislike) direct door zonder de pagina te vernieuwen.",
     "s18n-7c74c0d2d1c28d1568298c89742ce126": "Avatar",
     "s18n-aeab7c630dae161d8f6e2898dd83b471": "Gravatar gebruiken",
     "s18n-882e3436da897c055cc3f8bd2598b71a": "Identicon gebruiken",
